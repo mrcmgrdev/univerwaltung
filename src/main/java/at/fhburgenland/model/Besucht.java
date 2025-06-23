@@ -11,17 +11,17 @@ public class Besucht {
     @EmbeddedId
     private BesuchtPK id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @MapsId("studentId")
     @JoinColumn(name = "StudentID")
     private Student student;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @MapsId("kursId")
     @JoinColumn(name = "KursID")
     private Kurs kurs;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "NoteID")
     private Note note;
 

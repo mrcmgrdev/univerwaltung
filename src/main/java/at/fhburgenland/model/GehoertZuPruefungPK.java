@@ -4,10 +4,11 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 
 import java.io.Serializable;
+import java.util.Comparator;
 import java.util.Objects;
 
 @Embeddable
-public class GehoertZuPruefungPK implements Serializable {
+public class GehoertZuPruefungPK implements Serializable, Comparable<GehoertZuPruefungPK> {
     @Column(name = "KursID")
     private Integer kursId;
 
@@ -57,5 +58,13 @@ public class GehoertZuPruefungPK implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(kursId, pruefungsId);
+    }
+
+    @Override
+    public int compareTo(GehoertZuPruefungPK o) {
+        return Comparator
+                .comparing(GehoertZuPruefungPK::getKursId)
+                .thenComparing(GehoertZuPruefungPK::getPruefungsId)
+                .compare(this, o);
     }
 }

@@ -20,15 +20,15 @@ public class Pruefung {
     @Column(name = "Datum")
     private LocalDate datum;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "TypID", nullable = false)
     private Pruefungstyp pruefungstyp;
 
-    @OneToMany(mappedBy = "pruefung")
-    private Set<GehoertZuPruefung> zugehoerigeKurse = new HashSet<>();
+    @OneToMany(mappedBy = "pruefung", fetch = FetchType.EAGER)
+    private List<GehoertZuPruefung> zugehoerigeKurse = new ArrayList<>();
 
-    @OneToMany(mappedBy = "pruefung")
-    private Set<Absolviert> absolvierteVersuche = new HashSet<>();
+    @OneToMany(mappedBy = "pruefung", fetch = FetchType.EAGER)
+    private List<Absolviert> absolvierteVersuche = new ArrayList<>();
 
     public Pruefung() {
     }
@@ -76,45 +76,45 @@ public class Pruefung {
         return this;
     }
 
-    public void setZugehoerigeKurse(Set<GehoertZuPruefung> zugehoerigeKurse) {
+    public void setZugehoerigeKurse(List<GehoertZuPruefung> zugehoerigeKurse) {
         this.zugehoerigeKurse = zugehoerigeKurse;
     }
 
-    public Set<GehoertZuPruefung> getZugehoerigeKurse() {
+    public List<GehoertZuPruefung> getZugehoerigeKurse() {
         return zugehoerigeKurse;
     }
 
-    public Pruefung zugehoerigeKurse(Set<GehoertZuPruefung> zugehoerigeKurse) {
+    public Pruefung zugehoerigeKurse(List<GehoertZuPruefung> zugehoerigeKurse) {
         this.zugehoerigeKurse = zugehoerigeKurse;
         return this;
     }
 
-    public void setAbsolvierteVersuche(Set<Absolviert> absolvierteVersuche) {
+    public void setAbsolvierteVersuche(List<Absolviert> absolvierteVersuche) {
         this.absolvierteVersuche = absolvierteVersuche;
     }
 
-    public Set<Absolviert> getAbsolvierteVersuche() {
+    public List<Absolviert> getAbsolvierteVersuche() {
         return absolvierteVersuche;
     }
 
-    public Pruefung absolvierteVersuche(Set<Absolviert> absolvierteVersuche) {
+    public Pruefung absolvierteVersuche(List<Absolviert> absolvierteVersuche) {
         this.absolvierteVersuche = absolvierteVersuche;
         return this;
     }
 
     @Override
     public String toString() {
-        return "Pruefung{" + "pruefungsId=" + pruefungsId + ", bezeichnung='" + bezeichnung + '\'' + ", datum=" + datum + ", pruefungstyp=" + pruefungstyp + ", zugehoerigeKurse=" + zugehoerigeKurse + ", absolvierteVersuche=" + absolvierteVersuche + '}';
+        return "Pruefung{" + "pruefungsId=" + pruefungsId + ", bezeichnung='" + bezeichnung + '\'' + ", datum=" + datum + ", pruefungstyp=" + pruefungstyp + '}';
     }
 
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof Pruefung pruefung)) return false;
-        return Objects.equals(pruefungsId, pruefung.pruefungsId) && Objects.equals(bezeichnung, pruefung.bezeichnung) && Objects.equals(datum, pruefung.datum) && Objects.equals(pruefungstyp, pruefung.pruefungstyp) && Objects.equals(zugehoerigeKurse, pruefung.zugehoerigeKurse) && Objects.equals(absolvierteVersuche, pruefung.absolvierteVersuche);
+        return Objects.equals(pruefungsId, pruefung.pruefungsId) && Objects.equals(bezeichnung, pruefung.bezeichnung) && Objects.equals(datum, pruefung.datum) && Objects.equals(pruefungstyp, pruefung.pruefungstyp);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(pruefungsId, bezeichnung, datum, pruefungstyp, zugehoerigeKurse, absolvierteVersuche);
+        return Objects.hash(pruefungsId, bezeichnung, datum, pruefungstyp);
     }
 }

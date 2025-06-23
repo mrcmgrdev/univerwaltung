@@ -2,6 +2,11 @@ package at.fhburgenland.dao;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
+import org.hibernate.Session;
+
 import java.util.Collections;
 import java.util.List;
 
@@ -19,7 +24,9 @@ public abstract class GenericDao<T, ID> implements Crud<T, ID> {
         List<T> result = Collections.emptyList();
         try (EntityManager em = emf.createEntityManager()) {
             String query = String.format("SELECT e FROM %s e", entityClass.getSimpleName());
+            em.getTransaction().begin();
             result = em.createQuery(query, entityClass).getResultList();
+            em.getTransaction().commit();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -90,10 +97,10 @@ public abstract class GenericDao<T, ID> implements Crud<T, ID> {
     }
 
     @Override
-    public List<T> query(String query) {
-        List<T> result = Collections.emptyList();
+    public List<?> query(String query) {
+        List<?> result = Collections.emptyList();
         try (EntityManager em = emf.createEntityManager()) {
-            result = em.createQuery(query, entityClass).getResultList();
+            result = em.createQuery(query).getResultList();
         } catch (Exception ex) {
             ex.printStackTrace();
         }

@@ -35,10 +35,10 @@ public class Student {
         inverseJoinColumns = @JoinColumn(name = "StudienprogrammID"))
     private Set<Studienprogramm> gewaehlteStudienprogramme = new HashSet<>();
 
-    @OneToMany(mappedBy = "student")
+    @OneToMany(mappedBy = "student", fetch = FetchType.EAGER)
     private List<Besucht> besuchteKurse = new ArrayList<>();
 
-    @OneToMany(mappedBy = "student")
+    @OneToMany(mappedBy = "student", fetch = FetchType.EAGER)
     private List<Absolviert> absolviertePruefungen = new ArrayList<>();
 
     public Student() {

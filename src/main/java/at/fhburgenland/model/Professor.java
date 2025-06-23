@@ -1,4 +1,3 @@
-// File: at/fhburgenland/model/Professor.java
 package at.fhburgenland.model;
 
 import jakarta.persistence.*;
@@ -23,27 +22,29 @@ public class Professor {
     @Column(name = "Email", unique = true, length = 255)
     private String email;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "AbteilungsID", nullable = false)
     private Fachabteilung fachabteilung;
 
-    @OneToMany(mappedBy = "programmleiter")
-    private List<Studienprogramm> geleiteteStudienprogramme = new LinkedList<>();
+    @OneToOne(mappedBy = "programmleiter", fetch = FetchType.EAGER)
+    private Studienprogramm geleiteteStudienprogramm;
 
-    @ManyToMany
-    @JoinTable(name = "Unterrichtet", joinColumns = @JoinColumn(name = "ProfessorID"), inverseJoinColumns = @JoinColumn(name = "KursID"))
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "Unterrichtet",
+            joinColumns = @JoinColumn(name = "ProfessorID"),
+            inverseJoinColumns = @JoinColumn(name = "KursID"))
     private Set<Kurs> unterrichteteKurse = new HashSet<>();
 
     public Professor() {
     }
 
     public void addGeleitetesStudienprogramm(Studienprogramm sp) {
-        this.geleiteteStudienprogramme.add(sp);
+        this.geleiteteStudienprogramm = sp;
         sp.setProgrammleiter(this);
     }
 
     public void removeGeleitetesStudienprogramm(Studienprogramm sp) {
-        this.geleiteteStudienprogramme.remove(sp);
+        this.geleiteteStudienprogramm = null;
         sp.setProgrammleiter(null);
     }
 
@@ -103,16 +104,16 @@ public class Professor {
         return this;
     }
 
-    public void setStudienprogramme(List<Studienprogramm> studienprogramme) {
-        this.geleiteteStudienprogramme = studienprogramme;
+    public void setStudienprogramm(Studienprogramm studienprogramm) {
+        this.geleiteteStudienprogramm = studienprogramm;
     }
 
-    public List<Studienprogramm> getStudienprogramme() {
-        return geleiteteStudienprogramme;
+    public Studienprogramm getStudienprogramm() {
+        return geleiteteStudienprogramm;
     }
 
-    public Professor studienprogramme(List<Studienprogramm> studienprogramme) {
-        this.geleiteteStudienprogramme = studienprogramme;
+    public Professor studienprogramm(Studienprogramm studienprogramm) {
+        this.geleiteteStudienprogramm = studienprogramm;
         return this;
     }
 
@@ -131,6 +132,24 @@ public class Professor {
 
     @Override
     public String toString() {
-        return "Professor{" + "professorId=" + professorId + ", vorname='" + vorname + '\'' + ", nachname='" + nachname + '\'' + ", email='" + email + '\'' + ", fachabteilung=" + fachabteilung.toString() + '}';
+        return "Professor{" +
+                "professorId=" + professorId +
+                ", vorname='" + vorname + '\'' +
+                ", nachname='" + nachname + '\'' +
+                ", email='" + email + '\'' +
+                ", fachabteilung=" + (fachabteilung != null ? fachabteilung.getName() : "") +
+                ", geleiteteStudienprogramm=" + (geleiteteStudienprogramm != null ? geleiteteStudienprogramm.getName() : "") +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Professor professor)) return false;
+        return Objects.equals(professorId, professor.professorId) && Objects.equals(vorname, professor.vorname) && Objects.equals(nachname, professor.nachname) && Objects.equals(email, professor.email);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(professorId, vorname, nachname, email);
     }
 }

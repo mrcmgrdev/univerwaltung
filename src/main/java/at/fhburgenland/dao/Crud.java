@@ -13,5 +13,5 @@ public interface Crud<T, ID> {
     void delete(T entity);
     boolean deleteById(ID id);
 
-    List<T> query(String query);
+    List<?> query(String query);
 }

@@ -20,7 +20,7 @@ public class Fachabteilung {
     @Column(name = "Standort", nullable = false, length = 100)
     private String standort;
 
-    @OneToMany(mappedBy = "fachabteilung")
+    @OneToMany(mappedBy = "fachabteilung", fetch = FetchType.EAGER)
     private List<Professor> professoren = new ArrayList<>();
 
     public Fachabteilung() {
@@ -87,11 +87,11 @@ public class Fachabteilung {
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof Fachabteilung that)) return false;
-        return Objects.equals(abteilungsId, that.abteilungsId) && Objects.equals(name, that.name) && Objects.equals(standort, that.standort) && Objects.equals(professoren, that.professoren);
+        return Objects.equals(abteilungsId, that.abteilungsId) && Objects.equals(name, that.name) && Objects.equals(standort, that.standort);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(abteilungsId, name, standort, professoren);
+        return Objects.hash(abteilungsId, name, standort);
     }
 }

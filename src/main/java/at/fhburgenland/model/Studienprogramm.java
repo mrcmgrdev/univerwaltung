@@ -22,14 +22,14 @@ public class Studienprogramm {
     @Column(name = "Regelstudienzeit_in_Semester")
     private Integer regelstudienzeitInSemester;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "ProfessorID", nullable = false)
     private Professor programmleiter;
 
     @OneToMany(mappedBy = "studienprogramm")
     private List<Kurs> kurse = new ArrayList<>();
 
-    @ManyToMany(mappedBy = "gewaehlteStudienprogramme", fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "gewaehlteStudienprogramme")
     private Set<Student> studenten = new HashSet<>();
 
     public Studienprogramm() {
@@ -139,17 +139,17 @@ public class Studienprogramm {
 
     @Override
     public String toString() {
-        return "Studienprogramm{" + "studienprogrammId=" + studienprogrammId + ", name='" + name + '\'' + ", abschluss='" + abschluss + '\'' + ", regelstudienzeitInSemester=" + regelstudienzeitInSemester + ", programmleiter=" + programmleiter.toString() + '}';
+        return "Studienprogramm{" + "studienprogrammId=" + studienprogrammId + ", name='" + name + '\'' + ", abschluss='" + abschluss + '\'' + ", regelstudienzeitInSemester=" + regelstudienzeitInSemester + '}';
     }
 
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof Studienprogramm that)) return false;
-        return Objects.equals(studienprogrammId, that.studienprogrammId) && Objects.equals(name, that.name) && Objects.equals(abschluss, that.abschluss) && Objects.equals(regelstudienzeitInSemester, that.regelstudienzeitInSemester) && Objects.equals(programmleiter, that.programmleiter) && Objects.equals(kurse, that.kurse) && Objects.equals(studenten, that.studenten);
+        return Objects.equals(studienprogrammId, that.studienprogrammId) && Objects.equals(name, that.name) && Objects.equals(abschluss, that.abschluss) && Objects.equals(regelstudienzeitInSemester, that.regelstudienzeitInSemester);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(studienprogrammId, name, abschluss, regelstudienzeitInSemester, programmleiter, kurse, studenten);
+        return Objects.hash(studienprogrammId, name, abschluss, regelstudienzeitInSemester);
     }
 }

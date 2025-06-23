@@ -16,15 +16,15 @@ public class Note {
     private String bezeichnung;
 
     @OneToMany(mappedBy = "note")
-    private Set<Besucht> besuchteKurseNoten = new HashSet<>();
+    private List<Besucht> besuchteKurseNoten = new ArrayList<>();
 
     @OneToMany(mappedBy = "note")
-    private Set<Absolviert> absolviertePruefungenNoten = new HashSet<>();
+    private List<Absolviert> absolviertePruefungenNoten = new ArrayList<>();
 
     public Note() {
     }
 
-    public void setNoteId(Integer noteId) {
+    public void ListNoteId(Integer noteId) {
         this.noteId = noteId;
     }
 
@@ -37,7 +37,7 @@ public class Note {
         return this;
     }
 
-    public void setBezeichnung(String bezeichnung) {
+    public void ListBezeichnung(String bezeichnung) {
         this.bezeichnung = bezeichnung;
     }
 
@@ -50,45 +50,45 @@ public class Note {
         return this;
     }
 
-    public void setBesuchteKurseNoten(Set<Besucht> besuchteKurseNoten) {
+    public void ListBesuchteKurseNoten(List<Besucht> besuchteKurseNoten) {
         this.besuchteKurseNoten = besuchteKurseNoten;
     }
 
-    public Set<Besucht> getBesuchteKurseNoten() {
+    public List<Besucht> getBesuchteKurseNoten() {
         return besuchteKurseNoten;
     }
 
-    public Note besuche(Set<Besucht> besuche) {
+    public Note besuche(List<Besucht> besuche) {
         this.besuchteKurseNoten = besuche;
         return this;
     }
 
-    public void setAbsolviertePruefungenNoten(Set<Absolviert> absolviertePruefungenNoten) {
+    public void ListAbsolviertePruefungenNoten(List<Absolviert> absolviertePruefungenNoten) {
         this.absolviertePruefungenNoten = absolviertePruefungenNoten;
     }
 
-    public Set<Absolviert> getAbsolviertePruefungenNoten() {
+    public List<Absolviert> getAbsolviertePruefungenNoten() {
         return absolviertePruefungenNoten;
     }
 
-    public Note absolvierungen(Set<Absolviert> absolvierungen) {
+    public Note absolvierungen(List<Absolviert> absolvierungen) {
         this.absolviertePruefungenNoten = absolvierungen;
         return this;
     }
 
     @Override
     public String toString() {
-        return "Note{" + "noteId=" + noteId + ", bezeichnung='" + bezeichnung + '\'' + ", besuchteKurseNoten=" + besuchteKurseNoten + ", absolviertePruefungenNoten=" + absolviertePruefungenNoten + '}';
+        return "Note{" + "noteId=" + noteId + ", bezeichnung='" + bezeichnung + '\'' + '}';
     }
 
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof Note note)) return false;
-        return Objects.equals(noteId, note.noteId) && Objects.equals(bezeichnung, note.bezeichnung) && Objects.equals(besuchteKurseNoten, note.besuchteKurseNoten) && Objects.equals(absolviertePruefungenNoten, note.absolviertePruefungenNoten);
+        return Objects.equals(noteId, note.noteId) && Objects.equals(bezeichnung, note.bezeichnung);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(noteId, bezeichnung, besuchteKurseNoten, absolviertePruefungenNoten);
+        return Objects.hash(noteId, bezeichnung);
     }
 }
