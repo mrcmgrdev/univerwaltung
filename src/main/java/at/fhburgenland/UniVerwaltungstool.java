@@ -52,6 +52,11 @@ public class UniVerwaltungstool {
                 case "0" -> isRunning = false;
                 case "1" -> studentenMenu();
                 case "2" -> professorenMenu();
+                case "3" -> kurseMenu();
+                case "4" -> prufungenMenu();
+                case "5" -> notenMenu();
+                case "6" -> fachabteilungenMenu();
+                case "7" -> studienprogrammMenu();
                 default -> System.out.println("Ungültige Eingabe! Bitte versuchen Sie es erneut.");
             }
         }
@@ -509,5 +514,80 @@ public class UniVerwaltungstool {
             System.out.println("Kein Professor mit dieser Id gefunden.");
         }
 
+    }
+
+    private void kurseMenu() {
+        boolean isRunning = true;
+        while (isRunning) {
+            printSubMenu("Kurse");
+            switch (scanner.nextLine()) {
+                case "0" -> isRunning = false;
+//                case "1" -> addKurs();
+//                case "2" -> kursAnzeigenMenu();
+//                case "3" -> updateKurs();
+//                case "4" -> deleteKurs();
+                default -> System.out.println("Ungültige Eingabe!");
+            }
+        }
+    }
+
+    private void prufungenMenu() {
+        boolean isRunning = true;
+        while (isRunning) {
+            printSubMenu("Prüfungen");
+            switch (scanner.nextLine()) {
+                case "0" -> isRunning = false;
+//                case "1" -> addPrufung();
+//                case "2" -> prufungAnzeigenMenu();
+//                case "3" -> updatePrufung();
+//                case "4" -> deletePrufung();
+                default -> System.out.println("Ungültige Eingabe!");
+            }
+        }
+    }
+
+    private void notenMenu() {
+        boolean isRunning = true;
+        while (isRunning) {
+            printSubMenu("Noten");
+            switch (scanner.nextLine()) {
+                case "0" -> isRunning = false;
+//                case "1" -> addNote();
+//                case "2" -> noteAnzeigenMenu();
+//                case "3" -> updateNote();
+//                case "4" -> deleteNote();
+                default -> System.out.println("Ungültige Eingabe!");
+            }
+        }
+    }
+
+    private void fachabteilungenMenu() {
+        boolean isRunning = true;
+        while (isRunning) {
+            printSubMenu("Fachabteilungen");
+            switch (scanner.nextLine()) {
+                case "0" -> isRunning = false;
+//                case "1" -> addFachabteilung();
+//                case "2" -> fachabteilungAnzeigenMenu();
+//                case "3" -> updateFachabteilung();
+//                case "4" -> deleteFachabteilung();
+                default -> System.out.println("Ungültige Eingabe!");
+            }
+        }
+    }
+
+    private void studienprogrammMenu() {
+        boolean isRunning = true;
+        while (isRunning) {
+            printSubMenu("Studienprogramme");
+            switch (scanner.nextLine()) {
+                case "0" -> isRunning = false;
+//                case "1" -> addStudienprogramm();
+//                case "2" -> studienprogrammeAnzeigenMenu();
+//                case "3" -> updateStudienprogramm();
+//                case "4" -> deleteStudienprogramm();
+                default -> System.out.println("Ungültige Eingabe!");
+            }
+        }
     }
 }
