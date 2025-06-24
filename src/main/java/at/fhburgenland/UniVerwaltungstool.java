@@ -3,6 +3,7 @@ package at.fhburgenland;
 import at.fhburgenland.dao.*;
 import at.fhburgenland.model.*;
 import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.Persistence;
 
 import static at.fhburgenland.helper.ScannerHelper.readInt;
@@ -27,6 +28,7 @@ public class UniVerwaltungstool {
     private final PruefungDao pruefungDao;
     private final StudentDao studentDao;
     private final StudienprogrammDao studienprogrammDao;
+    private final PruefungstypDao pruefungstypDao;
 
     public UniVerwaltungstool() {
         scanner = new Scanner(System.in);
@@ -40,6 +42,7 @@ public class UniVerwaltungstool {
         this.pruefungDao = new PruefungDao(emf);
         this.studentDao = new StudentDao(emf);
         this.studienprogrammDao = new StudienprogrammDao(emf);
+        this.pruefungstypDao = new PruefungstypDao(emf);
 
         System.out.println("Willkommen beim UniVerwaltungstool!");
     }
@@ -57,6 +60,7 @@ public class UniVerwaltungstool {
                 case "5" -> notenMenu();
                 case "6" -> fachabteilungenMenu();
                 case "7" -> studienprogrammMenu();
+                case "8" -> pruefungstypMenu();
                 default -> System.out.println("Ungültige Eingabe! Bitte versuchen Sie es erneut.");
             }
         }
@@ -75,8 +79,9 @@ public class UniVerwaltungstool {
                 |5. Noten                  |
                 |6. Fachabteilungen        |
                 |7. Studienprogramme       |
-                |8. Statistiken Kurse      |
-                |9. Offene Notenvergabe    |
+                |8. Prüfungstypen          |
+                |9. Statistiken Kurse      |
+                |10. Offene Notenvergabe   |
                 --------------------------
                 Eingabe:""");
     }
@@ -522,12 +527,43 @@ public class UniVerwaltungstool {
             printSubMenu("Kurse");
             switch (scanner.nextLine()) {
                 case "0" -> isRunning = false;
-//                case "1" -> addKurs();
+                case "1" -> addKurs();
                 case "2" -> kursAnzeigenMenu();
-//                case "3" -> updateKurs();
+                case "3" -> updateKurs();
                 case "4" -> deleteKurs();
                 default -> System.out.println("Ungültige Eingabe!");
             }
+        }
+    }
+
+    private void addKurs() {
+        System.out.print("Kursbezeichnung: ");
+        String bezeichnung = scanner.nextLine();
+
+        System.out.print("Semester: ");
+        int semester = Integer.parseInt(scanner.nextLine());
+
+        System.out.print("ECTS: ");
+        int ects = Integer.parseInt(scanner.nextLine());
+
+        System.out.println("Zugehöriges Studienprogramm:");
+        studienprogrammDao.findAll().forEach(System.out::println);
+        System.out.print("Studienprogramm (Id): ");
+        Studienprogramm studienprogramm;
+        int studienprogrammId = readInt(scanner);
+       studienprogramm = studienprogrammDao.findById(studienprogrammId);
+        if (studienprogramm == null) {
+            System.out.println("Kein Studienprogramm mit dieser Id gefunden!");
+            return;
+        }
+
+        Kurs kurs = new Kurs().bezeichnung(bezeichnung).semester(semester).ects(ects).studienprogramm(studienprogramm);
+
+        Kurs addedKurs = kursDao.save(kurs);
+        if (addedKurs != null) {
+            System.out.println("Kurs erfolgreich hinzugefügt.");
+        } else {
+            System.out.println("Fehler beim Hinzufügen des Kurses.");
         }
     }
 
@@ -535,15 +571,73 @@ public class UniVerwaltungstool {
         kursDao.findAll().forEach(System.out::println);
     }
 
-    private void deleteKurs() {
-        System.out.print("Id des zu löschenden Kurses: ");
-        if (kursDao.deleteById(readInt(scanner))) {
-            System.out.println("Kurs erfolgreich gelöscht.");
-        } else {
+    private void updateKurs() {
+        System.out.print("Id des zu bearbeitenden Kurses: ");
+        Kurs kurs = kursDao.findById(readInt(scanner));
+
+        if (kurs == null) {
             System.out.println("Kein Kurs mit dieser Id gefunden.");
+            return;
+        }
+
+        System.out.print("Neue Kursbezeichnung (aktuell: " + kurs.getBezeichnung() + "): ");
+        String kursbezeichnung = scanner.nextLine();
+        if (!kursbezeichnung.isEmpty()) {
+            kurs.setBezeichnung(kursbezeichnung);
+        }
+
+        System.out.print("Neues Semester (aktuell: " + kurs.getSemester() + "): ");
+        String kursEingabe = scanner.nextLine();
+        if (!kursEingabe.isEmpty()) {
+            try {
+                int kursSemester = Integer.parseInt(kursEingabe);
+                kurs.setSemester(kursSemester);
+            } catch (NumberFormatException e) {
+                System.out.println("Ungültige Eingabe. Semester wurde nicht geändert.");
+            }
+        }
+
+            System.out.print("Neue ECTS (aktuell: " + kurs.getEcts() + "): ");
+            String ectsEingabe = scanner.nextLine();
+            if (!ectsEingabe.isEmpty()) {
+                try {
+                    int kursEcts = Integer.parseInt(ectsEingabe);
+                    kurs.setEcts(kursEcts);
+                } catch (NumberFormatException e) {
+                    System.out.println("Ungültige Eingabe. Ects wurde nicht geändert.");
+                }
+            }
+
+                System.out.println("Möchten sie das zugehöriges Studienprogramm ändern? (aktuell: " + kurs.getStudienprogramm() + "): j/n");
+        if (scanner.nextLine().equalsIgnoreCase("j")) {
+                int studienprogrammId = readInt(scanner);
+                try{
+                Studienprogramm studienprogramm = studienprogrammDao.findById(studienprogrammId);
+                    kurs.setStudienprogramm(studienprogramm);}
+                catch(EntityNotFoundException e){
+                    System.out.println("Kein Studienprogramm mit dieser Id gefunden: " + studienprogrammId);
+                }
+        }
+
+        Kurs updatedKurs = kursDao.update(kurs);
+        if (updatedKurs != null) {
+            System.out.println("Kurs erfolgreich aktualisiert.");
+        } else {
+            System.out.println("Fehler beim Aktualisieren des Kurses.");
         }
 
     }
+
+        private void deleteKurs() {
+            System.out.print("Id des zu löschenden Kurses: ");
+            if (kursDao.deleteById(readInt(scanner))) {
+                System.out.println("Kurs erfolgreich gelöscht.");
+            } else {
+                System.out.println("Kein Kurs mit dieser Id gefunden.");
+            }
+
+        }
+
 
     private void pruefungenMenu() {
         boolean isRunning = true;
@@ -551,12 +645,47 @@ public class UniVerwaltungstool {
             printSubMenu("Prüfungen");
             switch (scanner.nextLine()) {
                 case "0" -> isRunning = false;
-//                case "1" -> addPrufung();
+                case "1" -> addPruefung();
                 case "2" -> pruefungAnzeigenMenu();
-//                case "3" -> updatePrufung();
+                case "3" -> updatePruefung();
                 case "4" -> deletePruefung();
                 default -> System.out.println("Ungültige Eingabe!");
             }
+        }
+    }
+
+    private void addPruefung() {
+        System.out.print("Bezeichnung der Prüfung: ");
+        String bezeichnung = scanner.nextLine();
+
+        System.out.print("Datum der Prüfung (YYYY-MM-DD, optional): ");
+        String datumInput = scanner.nextLine();
+        LocalDate datum = null;
+        if (!datumInput.isBlank()) {
+            try {
+                datum = LocalDate.parse(datumInput);
+            } catch (Exception e) {
+                System.out.println("Ungültiges Datum! Wird ignoriert.");
+            }
+        }
+
+        System.out.println("Verfügbare Prüfungstypen:");
+        List<Pruefungstyp> typen = pruefungstypDao.findAll();
+        typen.forEach(pt -> System.out.println("  " + pt.getTypId() + ": " + pt.getBezeichnung()));
+        System.out.print("ID des Prüfungstyps: ");
+        int typId = readInt(scanner);
+        Pruefungstyp typ = pruefungstypDao.findById(typId);
+        if (typ == null) {
+            System.out.println("Kein gültiger Prüfungstyp gefunden.");
+            return;
+        }
+
+        Pruefung pruefung = new Pruefung().bezeichnung(bezeichnung).datum(datum).pruefungstyp(typ);
+
+        Pruefung created = pruefungDao.save(pruefung);
+        if (created != null) {System.out.println("Prüfung erfolgreich erstellt.");}
+        else {
+            System.out.println("Fehler beim Erstellen der Prüfung.");
         }
     }
 
@@ -564,9 +693,62 @@ public class UniVerwaltungstool {
         pruefungDao.findAll().forEach(System.out::println);
     }
 
+    private void updatePruefung() {
+        pruefungDao.findAll().forEach(System.out::println);
+        System.out.print("ID der zu bearbeitenden Prüfung: ");
+        int id = readInt(scanner);
+        Pruefung pruefung = pruefungDao.findById(id);
+
+        if (pruefung == null) {
+            System.out.println("Keine Prüfung mit dieser ID gefunden.");
+            return;
+        }
+
+        System.out.print("Neue Bezeichnung (aktuell: " + pruefung.getBezeichnung() + "): ");
+        String bezeichnung = scanner.nextLine();
+        if (!bezeichnung.isBlank()) {
+            pruefung.setBezeichnung(bezeichnung);
+        }
+
+        System.out.print("Neues Datum (aktuell: " + pruefung.getDatum() + ", YYYY-MM-DD, optional): ");
+        String datumInput = scanner.nextLine();
+        if (!datumInput.isBlank()) {
+            try {
+                pruefung.setDatum(LocalDate.parse(datumInput));
+            } catch (Exception e) {
+                System.out.println("Ungültiges Datum! Keine Änderung.");
+            }
+        }
+
+        System.out.println("Aktueller Prüfungstyp: " + pruefung.getPruefungstyp().getBezeichnung());
+        System.out.print("Neuer Prüfungstyp-ID (leer = keine Änderung): ");
+        String typInput = scanner.nextLine();
+        if (!typInput.isBlank()) {
+            try {
+                int typId = Integer.parseInt(typInput);
+                Pruefungstyp neuerTyp = pruefungstypDao.findById(typId);
+                if (neuerTyp != null) {
+                    pruefung.setPruefungstyp(neuerTyp);
+                } else {
+                    System.out.println("Kein gültiger Typ mit dieser ID gefunden.");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Ungültige ID!");
+            }
+        }
+
+        Pruefung updated = pruefungDao.update(pruefung);
+        if (updated != null) {
+            System.out.println("Prüfung erfolgreich aktualisiert.");
+        } else {
+            System.out.println("Fehler beim Aktualisieren der Prüfung.");
+        }
+    }
+
+
     private void deletePruefung() {
         System.out.print("Id der zu löschenden Prüfung: ");
-        if (kursDao.deleteById(readInt(scanner))) {
+        if (pruefungDao.deleteById(readInt(scanner))) {
             System.out.println("Prüfung erfolgreich gelöscht.");
         } else {
             System.out.println("Keine Prüfung mit dieser Id gefunden.");
@@ -580,27 +762,88 @@ public class UniVerwaltungstool {
             printSubMenu("Noten");
             switch (scanner.nextLine()) {
                 case "0" -> isRunning = false;
-//                case "1" -> addNote();
+                case "1" -> addNote();
                 case "2" -> noteAnzeigenMenu();
-//                case "3" -> updateNote();
+                case "3" -> updateNote();
                 case "4" -> deleteNote();
                 default -> System.out.println("Ungültige Eingabe!");
             }
         }
     }
 
-    private void noteAnzeigenMenu(){
-        noteDao.findAll().forEach(System.out::println);
+    private void addNote() {
+        System.out.print("Note-ID (Integer): ");
+        int id = readInt(scanner);
+
+        if (noteDao.findById(id) != null) {
+            System.out.println("Eine Note mit dieser ID existiert bereits.");
+            return;
+        }
+
+        System.out.print("Bezeichnung der Note: ");
+        String bezeichnung = scanner.nextLine();
+
+        if (bezeichnung.isBlank()) {
+            System.out.println("Bezeichnung darf nicht leer sein.");
+            return;
+        }
+
+        Note note = new Note().noteId(id).bezeichnung(bezeichnung);
+        Note created = noteDao.save(note);
+
+        if (created != null) {
+            System.out.println("Note erfolgreich erstellt.");
+        } else {
+            System.out.println("Fehler beim Erstellen der Note.");
+        }
+    }
+
+    private void noteAnzeigenMenu() {
+        List<Note> noten = noteDao.findAll();
+        if (noten.isEmpty()) {
+            System.out.println("Keine Noten vorhanden.");
+        } else {
+            noten.forEach(note -> System.out.println("ID: " + note.getNoteId() + " | Bezeichnung: " + note.getBezeichnung()));
+        }
+    }
+
+    private void updateNote() {
+        noteAnzeigenMenu();
+        System.out.print("ID der zu bearbeitenden Note: ");
+        int id = readInt(scanner);
+        Note note = noteDao.findById(id);
+
+        if (note == null) {
+            System.out.println("Keine Note mit dieser ID gefunden.");
+            return;
+        }
+
+        System.out.print("Neue Bezeichnung (aktuell: " + note.getBezeichnung() + "): ");
+        String neueBezeichnung = scanner.nextLine();
+
+        if (!neueBezeichnung.isBlank()) {
+            note.setBezeichnung(neueBezeichnung);
+            Note updated = noteDao.update(note);
+            if (updated != null) {
+                System.out.println("Note erfolgreich aktualisiert.");
+            } else {
+                System.out.println("Fehler beim Aktualisieren der Note.");
+            }
+        } else {
+            System.out.println("Keine Änderung vorgenommen.");
+        }
     }
 
     private void deleteNote() {
-        System.out.print("Id der zu löschenden Note: ");
-        if (noteDao.deleteById(readInt(scanner))) {
+        noteAnzeigenMenu();
+        System.out.print("ID der zu löschenden Note: ");
+        int id = readInt(scanner);
+
+        if (noteDao.deleteById(id)) {
             System.out.println("Note erfolgreich gelöscht.");
         } else {
-            System.out.println("Keine Note mit dieser Id gefunden.");
+            System.out.println("Keine Note mit dieser ID gefunden oder sie wird noch verwendet.");
         }
-
     }
 
     private void fachabteilungenMenu() {
@@ -609,12 +852,29 @@ public class UniVerwaltungstool {
             printSubMenu("Fachabteilungen");
             switch (scanner.nextLine()) {
                 case "0" -> isRunning = false;
-//                case "1" -> addFachabteilung();
+                case "1" -> addFachabteilung();
                 case "2" -> fachabteilungAnzeigenMenu();
-//                case "3" -> updateFachabteilung();
+                case "3" -> updateFachabteilung();
                 case "4" -> deleteFachabteilung();
                 default -> System.out.println("Ungültige Eingabe!");
             }
+        }
+    }
+
+    private void addFachabteilung() {
+        System.out.print("Name: ");
+        String name = scanner.nextLine();
+
+        System.out.print("Standort: ");
+        String standort = scanner.nextLine();
+
+        Fachabteilung fachabteilung = new Fachabteilung().name(name).standort(standort);
+
+        Fachabteilung addedFachabteilung =fachabteilungDao.save(fachabteilung);
+        if (addedFachabteilung != null) {
+            System.out.println("Fachabteilung erfolgreich hinzugefügt.");
+        } else {
+            System.out.println("Fehler beim Hinzufügen der Fachabteilung.");
         }
     }
 
@@ -622,9 +882,37 @@ public class UniVerwaltungstool {
         fachabteilungDao.findAll().forEach(System.out::println);
     }
 
+    private void updateFachabteilung() {
+        System.out.print("Id der zu bearbeitenden Fachabteilung: ");
+        Fachabteilung fachabteilung = fachabteilungDao.findById(readInt(scanner));
+        if (fachabteilung == null) {
+            System.out.println("Keine Fachabteilung mit dieser Id gefunden.");
+            return;
+        }
+
+        System.out.print("Neuer Fachabteilungsname (aktuell: " + fachabteilung.getName() + "): ");
+        String fachabteilungName = scanner.nextLine();
+        if (!fachabteilungName.isEmpty()) {
+            fachabteilung.setName(fachabteilungName);
+        }
+
+        System.out.print("Neuer Fachabteilungsstandort (aktuell: " + fachabteilung.getStandort() + "): ");
+        String fachabteilungStandort = scanner.nextLine();
+        if (!fachabteilungStandort.isEmpty()) {
+            fachabteilung.setStandort(fachabteilungStandort);
+        }
+
+        Fachabteilung updatedFachabteilung = fachabteilungDao.update(fachabteilung);
+        if (updatedFachabteilung != null) {
+            System.out.println("Fachabteilung erfolgreich aktualisiert.");
+        } else {
+            System.out.println("Fehler beim Aktualisieren der Fachabteilung.");
+        }
+    }
+
     private void deleteFachabteilung() {
         System.out.print("Id der zu löschenden Fachabteilung: ");
-        if (kursDao.deleteById(readInt(scanner))) {
+        if (fachabteilungDao.deleteById(readInt(scanner))) {
             System.out.println("Fachabteilung erfolgreich gelöscht.");
         } else {
             System.out.println("Keine Fachabteilung mit dieser Id gefunden.");
@@ -638,12 +926,40 @@ public class UniVerwaltungstool {
             printSubMenu("Studienprogramme");
             switch (scanner.nextLine()) {
                 case "0" -> isRunning = false;
-//                case "1" -> addStudienprogramm();
+                case "1" -> addStudienprogramm();
                 case "2" -> studienprogrammeAnzeigenMenu();
-//                case "3" -> updateStudienprogramm();
+                case "3" -> updateStudienprogramm();
                 case "4" -> deleteStudienprogramm();
                 default -> System.out.println("Ungültige Eingabe!");
             }
+        }
+    }
+
+    private void addStudienprogramm() {
+        System.out.print("Name: ");
+        String name = scanner.nextLine();
+
+        System.out.print("Abschluss: ");
+        String abschluss = scanner.nextLine();
+
+        System.out.print("Regelstudienzeit in Semester: ");
+        int semester = Integer.parseInt(scanner.nextLine());
+
+        System.out.println("Leiter für das Studienprogramm auswählen:");
+        professorDao.findAll().forEach(System.out::println);
+        Professor studienprogrammLeiter = professorDao.findById(readInt(scanner));
+        if (studienprogrammLeiter == null) {
+            System.out.println("Kein Professor mit dieser Id gefunden.");
+            return;
+        }
+
+        Studienprogramm studienprogramm = new Studienprogramm().name(name).abschluss(abschluss).regelstudienzeitInSemester(semester).programmleiter(studienprogrammLeiter);
+
+        Studienprogramm addedStudienprogramm =studienprogrammDao.save(studienprogramm);
+        if (addedStudienprogramm != null) {
+            System.out.println("Studienprogramm erfolgreich hinzugefügt.");
+        } else {
+            System.out.println("Fehler beim Hinzufügen des Studienprogramms.");
         }
     }
 
@@ -651,8 +967,59 @@ public class UniVerwaltungstool {
         studienprogrammDao.findAll().forEach(System.out::println);
     }
 
+    private void updateStudienprogramm() {
+        System.out.print("Id des zu bearbeitenden Studienprogramms: ");
+        Studienprogramm studienprogramm = studienprogrammDao.findById(readInt(scanner));
+        if (studienprogramm == null) {
+            System.out.println("Kein Studienprogramm mit dieser Id gefunden.");
+            return;
+        }
+
+        System.out.print("Neuer Studienprogrammsname (aktuell: " + studienprogramm.getName() + "): ");
+        String studienprogrammName = scanner.nextLine();
+        if (!studienprogrammName.isEmpty()) {
+            studienprogramm.setName(studienprogrammName);
+        }
+
+        System.out.print("Neuer Abschluss des Studienprogramms (aktuell: " + studienprogramm.getAbschluss() + "): ");
+        String studienprogrammAbschluss = scanner.nextLine();
+        if (!studienprogrammAbschluss.isEmpty()) {
+            studienprogramm.setAbschluss(studienprogrammAbschluss);
+        }
+
+        System.out.print("Neue Regelstudienzeit (aktuell: " + studienprogramm.getRegelstudienzeitInSemester() + "): ");
+        String regelstudienzeitEingabe = scanner.nextLine();
+        if (!regelstudienzeitEingabe.isEmpty()) {
+            try {
+                int regelstudienzeit = Integer.parseInt(regelstudienzeitEingabe);
+                studienprogramm.setRegelstudienzeitInSemester(regelstudienzeit);
+            } catch (NumberFormatException e) {
+                System.out.println("Ungültige Eingabe. Regelstudienzeit wurde nicht geändert.");
+            }
+        }
+
+        System.out.println("Möchten sie den Studienprogrammleiter ändern? (aktuell: " + studienprogramm.getProgrammleiter() + "): j/n");
+        if (scanner.nextLine().equalsIgnoreCase("j")) {
+            professorDao.findAll().forEach(System.out::println);
+            int studienprogrammLeiterID = readInt(scanner);
+            try{
+                Professor studienprogrammLeiter = professorDao.findById(studienprogrammLeiterID);
+                studienprogramm.setProgrammleiter(studienprogrammLeiter);}
+            catch(EntityNotFoundException e){
+                System.out.println("Kein Professor mit dieser Id gefunden: "+ studienprogrammLeiterID);
+            }
+        }
+
+        Studienprogramm updatedStudienprogramm = studienprogrammDao.update(studienprogramm);
+        if (updatedStudienprogramm != null) {
+            System.out.println("Studienprogramm erfolgreich aktualisiert.");
+        } else {
+            System.out.println("Fehler beim Aktualisieren des Studienprogramms.");
+        }
+    }
+
     private void deleteStudienprogramm() {
-        System.out.print("Id des zu löschenden Kurses: ");
+        System.out.print("Id des zu löschenden Studienprogramms: ");
         if (studienprogrammDao.deleteById(readInt(scanner))) {
             System.out.println("Studienprogramm erfolgreich gelöscht.");
         } else {
@@ -660,4 +1027,86 @@ public class UniVerwaltungstool {
         }
 
     }
+
+    private void pruefungstypMenu() {
+        boolean isRunning = true;
+        while (isRunning) {
+            printSubMenu("Prüfungstypen");
+            switch (scanner.nextLine()) {
+                case "0" -> isRunning = false;
+                case "1" -> addPruefungstyp();
+                case "2" -> pruefungstypenAnzeigenMenu();
+                case "3" -> updatePruefungstyp();
+                case "4" -> deletePruefungstyp();
+                default -> System.out.println("Ungültige Eingabe!");
+            }
+        }
+    }
+
+    private void addPruefungstyp() {
+        System.out.print("Bezeichnung des neuen Prüfungstyps: ");
+        String bezeichnung = scanner.nextLine();
+
+        if (bezeichnung.isBlank()) {
+            System.out.println("Bezeichnung darf nicht leer sein.");
+            return;
+        }
+
+        Pruefungstyp typ = new Pruefungstyp().bezeichnung(bezeichnung);
+        Pruefungstyp created = pruefungstypDao.save(typ);
+
+        if (created != null) {
+            System.out.println("Prüfungstyp erfolgreich erstellt.");
+        } else {
+            System.out.println("Fehler beim Erstellen des Prüfungstyps.");
+        }
+    }
+
+    private void pruefungstypenAnzeigenMenu() {
+        List<Pruefungstyp> typen = pruefungstypDao.findAll();
+        if (typen.isEmpty()) {
+            System.out.println("Keine Prüfungstypen vorhanden.");
+        } else {
+            typen.forEach(pt -> System.out.println("ID: " + pt.getTypId() + " | Bezeichnung: " + pt.getBezeichnung()));
+        }
+    }
+
+    private void updatePruefungstyp() {
+        pruefungstypenAnzeigenMenu();
+        System.out.print("ID des zu bearbeitenden Prüfungstyps: ");
+        int id = readInt(scanner);
+        Pruefungstyp typ = pruefungstypDao.findById(id);
+
+        if (typ == null) {
+            System.out.println("Kein Prüfungstyp mit dieser ID gefunden.");
+            return;
+        }
+
+        System.out.print("Neue Bezeichnung (aktuell: " + typ.getBezeichnung() + "): ");
+        String neueBezeichnung = scanner.nextLine();
+
+        if (!neueBezeichnung.isBlank()) {
+            typ.setBezeichnung(neueBezeichnung);
+        }
+
+        Pruefungstyp updated = pruefungstypDao.update(typ);
+        if (updated != null) {
+            System.out.println("Prüfungstyp erfolgreich aktualisiert.");
+        } else {
+            System.out.println("Fehler beim Aktualisieren des Prüfungstyps.");
+        }
+    }
+
+    private void deletePruefungstyp() {
+        pruefungstypenAnzeigenMenu();
+        System.out.print("ID des zu löschenden Prüfungstyps: ");
+        int id = readInt(scanner);
+
+        if (pruefungstypDao.deleteById(id)) {
+            System.out.println("Prüfungstyp erfolgreich gelöscht.");
+        } else {
+            System.out.println("Kein Prüfungstyp mit dieser ID gefunden oder bereits verwendet.");
+        }
+    }
+
 }
