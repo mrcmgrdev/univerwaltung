@@ -53,7 +53,7 @@ public class UniVerwaltungstool {
                 case "1" -> studentenMenu();
                 case "2" -> professorenMenu();
                 case "3" -> kurseMenu();
-                case "4" -> prufungenMenu();
+                case "4" -> pruefungenMenu();
                 case "5" -> notenMenu();
                 case "6" -> fachabteilungenMenu();
                 case "7" -> studienprogrammMenu();
@@ -523,27 +523,55 @@ public class UniVerwaltungstool {
             switch (scanner.nextLine()) {
                 case "0" -> isRunning = false;
 //                case "1" -> addKurs();
-//                case "2" -> kursAnzeigenMenu();
+                case "2" -> kursAnzeigenMenu();
 //                case "3" -> updateKurs();
-//                case "4" -> deleteKurs();
+                case "4" -> deleteKurs();
                 default -> System.out.println("Ungültige Eingabe!");
             }
         }
     }
 
-    private void prufungenMenu() {
+    private void kursAnzeigenMenu(){
+        kursDao.findAll().forEach(System.out::println);
+    }
+
+    private void deleteKurs() {
+        System.out.print("Id des zu löschenden Kurses: ");
+        if (kursDao.deleteById(readInt(scanner))) {
+            System.out.println("Kurs erfolgreich gelöscht.");
+        } else {
+            System.out.println("Kein Kurs mit dieser Id gefunden.");
+        }
+
+    }
+
+    private void pruefungenMenu() {
         boolean isRunning = true;
         while (isRunning) {
             printSubMenu("Prüfungen");
             switch (scanner.nextLine()) {
                 case "0" -> isRunning = false;
 //                case "1" -> addPrufung();
-//                case "2" -> prufungAnzeigenMenu();
+                case "2" -> pruefungAnzeigenMenu();
 //                case "3" -> updatePrufung();
-//                case "4" -> deletePrufung();
+                case "4" -> deletePruefung();
                 default -> System.out.println("Ungültige Eingabe!");
             }
         }
+    }
+
+    private void pruefungAnzeigenMenu(){
+        pruefungDao.findAll().forEach(System.out::println);
+    }
+
+    private void deletePruefung() {
+        System.out.print("Id der zu löschenden Prüfung: ");
+        if (kursDao.deleteById(readInt(scanner))) {
+            System.out.println("Prüfung erfolgreich gelöscht.");
+        } else {
+            System.out.println("Keine Prüfung mit dieser Id gefunden.");
+        }
+
     }
 
     private void notenMenu() {
@@ -553,12 +581,26 @@ public class UniVerwaltungstool {
             switch (scanner.nextLine()) {
                 case "0" -> isRunning = false;
 //                case "1" -> addNote();
-//                case "2" -> noteAnzeigenMenu();
+                case "2" -> noteAnzeigenMenu();
 //                case "3" -> updateNote();
-//                case "4" -> deleteNote();
+                case "4" -> deleteNote();
                 default -> System.out.println("Ungültige Eingabe!");
             }
         }
+    }
+
+    private void noteAnzeigenMenu(){
+        noteDao.findAll().forEach(System.out::println);
+    }
+
+    private void deleteNote() {
+        System.out.print("Id der zu löschenden Note: ");
+        if (noteDao.deleteById(readInt(scanner))) {
+            System.out.println("Note erfolgreich gelöscht.");
+        } else {
+            System.out.println("Keine Note mit dieser Id gefunden.");
+        }
+
     }
 
     private void fachabteilungenMenu() {
@@ -568,12 +610,26 @@ public class UniVerwaltungstool {
             switch (scanner.nextLine()) {
                 case "0" -> isRunning = false;
 //                case "1" -> addFachabteilung();
-//                case "2" -> fachabteilungAnzeigenMenu();
+                case "2" -> fachabteilungAnzeigenMenu();
 //                case "3" -> updateFachabteilung();
-//                case "4" -> deleteFachabteilung();
+                case "4" -> deleteFachabteilung();
                 default -> System.out.println("Ungültige Eingabe!");
             }
         }
+    }
+
+    private void fachabteilungAnzeigenMenu(){
+        fachabteilungDao.findAll().forEach(System.out::println);
+    }
+
+    private void deleteFachabteilung() {
+        System.out.print("Id der zu löschenden Fachabteilung: ");
+        if (kursDao.deleteById(readInt(scanner))) {
+            System.out.println("Fachabteilung erfolgreich gelöscht.");
+        } else {
+            System.out.println("Keine Fachabteilung mit dieser Id gefunden.");
+        }
+
     }
 
     private void studienprogrammMenu() {
@@ -583,11 +639,25 @@ public class UniVerwaltungstool {
             switch (scanner.nextLine()) {
                 case "0" -> isRunning = false;
 //                case "1" -> addStudienprogramm();
-//                case "2" -> studienprogrammeAnzeigenMenu();
+                case "2" -> studienprogrammeAnzeigenMenu();
 //                case "3" -> updateStudienprogramm();
-//                case "4" -> deleteStudienprogramm();
+                case "4" -> deleteStudienprogramm();
                 default -> System.out.println("Ungültige Eingabe!");
             }
         }
+    }
+
+    private void studienprogrammeAnzeigenMenu(){
+        studienprogrammDao.findAll().forEach(System.out::println);
+    }
+
+    private void deleteStudienprogramm() {
+        System.out.print("Id des zu löschenden Kurses: ");
+        if (studienprogrammDao.deleteById(readInt(scanner))) {
+            System.out.println("Studienprogramm erfolgreich gelöscht.");
+        } else {
+            System.out.println("Kein Studienprogramm mit dieser Id gefunden.");
+        }
+
     }
 }
