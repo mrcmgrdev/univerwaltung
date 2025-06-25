@@ -46,7 +46,9 @@ public class GehoertZuPruefungPK implements Serializable, Comparable<GehoertZuPr
 
     @Override
     public String toString() {
-        return "GehoertZuPruefungPK{" + "kursId=" + kursId + ", pruefungsId=" + pruefungsId + '}';
+        return String.format("GehoertZuPruefungPK KursID: %s, PruefungsID: %s",
+                kursId != null ? kursId.toString() : "n/a",
+                pruefungsId != null ? pruefungsId.toString() : "n/a");
     }
 
     @Override

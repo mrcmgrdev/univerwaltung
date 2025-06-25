@@ -33,19 +33,9 @@ public class Professor {
     @JoinTable(name = "Unterrichtet",
             joinColumns = @JoinColumn(name = "ProfessorID"),
             inverseJoinColumns = @JoinColumn(name = "KursID"))
-    private Set<Kurs> unterrichteteKurse = new HashSet<>();
+    private List<Kurs> unterrichteteKurse = new ArrayList<>();
 
     public Professor() {
-    }
-
-    public void addGeleitetesStudienprogramm(Studienprogramm sp) {
-        this.geleiteteStudienprogramm = sp;
-        sp.setProgrammleiter(this);
-    }
-
-    public void removeGeleitetesStudienprogramm(Studienprogramm sp) {
-        this.geleiteteStudienprogramm = null;
-        sp.setProgrammleiter(null);
     }
 
     public Integer getProfessorId() {
@@ -117,29 +107,26 @@ public class Professor {
         return this;
     }
 
-    public void setUnterrichteteKurse(Set<Kurs> unterrichteteKurse) {
+    public void setUnterrichteteKurse(List<Kurs> unterrichteteKurse) {
         this.unterrichteteKurse = unterrichteteKurse;
     }
 
-    public Set<Kurs> getUnterrichteteKurse() {
+    public List<Kurs> getUnterrichteteKurse() {
         return unterrichteteKurse;
     }
 
-    public Professor unterrichteteKurse(Set<Kurs> unterrichteteKurse) {
+    public Professor unterrichteteKurse(List<Kurs> unterrichteteKurse) {
         this.unterrichteteKurse = unterrichteteKurse;
         return this;
     }
 
     @Override
     public String toString() {
-        return "Professor{" +
-                "professorId=" + professorId +
-                ", vorname='" + vorname + '\'' +
-                ", nachname='" + nachname + '\'' +
-                ", email='" + email + '\'' +
-                ", fachabteilung=" + (fachabteilung != null ? fachabteilung.getName() : "") +
-                ", geleiteteStudienprogramm=" + (geleiteteStudienprogramm != null ? geleiteteStudienprogramm.getName() : "") +
-                '}';
+        return String.format("Professor ID: %s, Name: %-20s, Email: %-30s, Fachabteilung: %s",
+                professorId != null ? professorId.toString() : "n/a",
+                vorname + " " + nachname,
+                email != null ? email : "n/a",
+                fachabteilung != null ? fachabteilung.getName() : "n/a");
     }
 
     @Override

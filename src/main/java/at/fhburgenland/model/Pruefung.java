@@ -104,17 +104,21 @@ public class Pruefung {
 
     @Override
     public String toString() {
-        return "Pruefung{" + "pruefungsId=" + pruefungsId + ", bezeichnung='" + bezeichnung + '\'' + ", datum=" + datum + ", pruefungstyp=" + pruefungstyp + '}';
+        return String.format("Pruefung ID: %s, Bezeichnung: %-30s, Datum: %s, Typ: %s",
+                pruefungsId != null ? pruefungsId.toString() : "n/a",
+                bezeichnung != null ? bezeichnung : "n/a",
+                datum != null ? datum.toString() : "n/a",
+                pruefungstyp != null ? pruefungstyp.getBezeichnung() : "n/a");
     }
 
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof Pruefung pruefung)) return false;
-        return Objects.equals(pruefungsId, pruefung.pruefungsId) && Objects.equals(bezeichnung, pruefung.bezeichnung) && Objects.equals(datum, pruefung.datum) && Objects.equals(pruefungstyp, pruefung.pruefungstyp);
+        return Objects.equals(pruefungsId, pruefung.pruefungsId) && Objects.equals(bezeichnung, pruefung.bezeichnung) && Objects.equals(datum, pruefung.datum);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(pruefungsId, bezeichnung, datum, pruefungstyp);
+        return Objects.hash(pruefungsId, bezeichnung, datum);
     }
 }

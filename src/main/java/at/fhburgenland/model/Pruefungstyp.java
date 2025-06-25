@@ -17,7 +17,7 @@ public class Pruefungstyp {
     private String bezeichnung;
 
     @OneToMany(mappedBy = "pruefungstyp")
-    private Set<Pruefung> pruefungen = new HashSet<>();
+    private List<Pruefung> pruefungen = new ArrayList<>();
 
     public Pruefungstyp() {
     }
@@ -49,32 +49,34 @@ public class Pruefungstyp {
         return this;
     }
 
-    public void setPruefungen(Set<Pruefung> pruefungen) {
+    public void setPruefungen(List<Pruefung> pruefungen) {
         this.pruefungen = pruefungen;
     }
 
-    public Set<Pruefung> getPruefungen() {
+    public List<Pruefung> getPruefungen() {
         return pruefungen;
     }
 
-    public Pruefungstyp pruefungen(Set<Pruefung> pruefungen) {
+    public Pruefungstyp pruefungen(List<Pruefung> pruefungen) {
         this.pruefungen = pruefungen;
         return this;
     }
 
     @Override
     public String toString() {
-        return "Pruefungstyp{" + "typId=" + typId + ", bezeichnung='" + bezeichnung + '\'' + ", pruefungen=" + pruefungen + '}';
+        return String.format("Pruefungstyp ID: %s, Bezeichnung: %-30s",
+                typId != null ? typId.toString() : "n/a",
+                bezeichnung != null ? bezeichnung : "n/a");
     }
 
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof Pruefungstyp that)) return false;
-        return Objects.equals(typId, that.typId) && Objects.equals(bezeichnung, that.bezeichnung) && Objects.equals(pruefungen, that.pruefungen);
+        return Objects.equals(typId, that.typId) && Objects.equals(bezeichnung, that.bezeichnung);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(typId, bezeichnung, pruefungen);
+        return Objects.hash(typId, bezeichnung);
     }
 }

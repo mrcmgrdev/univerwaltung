@@ -73,7 +73,11 @@ public class Besucht {
 
     @Override
     public String toString() {
-        return "Besucht{" + "student=" + student + ", kurs=" + kurs + ", note=" + note + '}';
+        return String.format("Besucht ID: %s, Student: %s, Kurs: %s, Note: %s",
+                id != null ? id.toString() : "n/a",
+                student != null ? student.getVorname() + " " + student.getNachname() : "n/a",
+                kurs != null ? kurs.getBezeichnung() : "n/a",
+                note != null ? note.getBezeichnung() : "n/a");
     }
 
     @Override

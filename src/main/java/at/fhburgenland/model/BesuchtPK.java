@@ -46,7 +46,9 @@ public class BesuchtPK implements Serializable, Comparable<BesuchtPK> {
 
     @Override
     public String toString() {
-        return "BesuchtPK{" + "studentId=" + studentId + ", kursId=" + kursId + '}';
+        return String.format("BesuchtPK StudentID: %s, KursID: %s",
+                studentId != null ? studentId.toString() : "n/a",
+                kursId != null ? kursId.toString() : "n/a");
     }
 
     @Override

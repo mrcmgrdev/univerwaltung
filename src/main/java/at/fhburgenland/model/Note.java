@@ -50,7 +50,7 @@ public class Note {
         return this;
     }
 
-    public void ListBesuchteKurseNoten(List<Besucht> besuchteKurseNoten) {
+    public void setBesuchteKurseNoten(List<Besucht> besuchteKurseNoten) {
         this.besuchteKurseNoten = besuchteKurseNoten;
     }
 
@@ -63,7 +63,7 @@ public class Note {
         return this;
     }
 
-    public void ListAbsolviertePruefungenNoten(List<Absolviert> absolviertePruefungenNoten) {
+    public void setAbsolviertePruefungenNoten(List<Absolviert> absolviertePruefungenNoten) {
         this.absolviertePruefungenNoten = absolviertePruefungenNoten;
     }
 
@@ -78,7 +78,9 @@ public class Note {
 
     @Override
     public String toString() {
-        return "Note{" + "noteId=" + noteId + ", bezeichnung='" + bezeichnung + '\'' + '}';
+        return String.format("Note ID: %s, Bezeichnung: %-20s",
+                noteId != null ? noteId.toString() : "n/a",
+                bezeichnung != null ? bezeichnung : "n/a");
     }
 
     @Override

@@ -72,7 +72,11 @@ public class GehoertZuPruefung {
 
     @Override
     public String toString() {
-        return "GehoertZuPruefung{" + "id=" + id + ", kurs=" + kurs + ", pruefung=" + pruefung + ", anteilGesamtnoteInProzent=" + anteilGesamtnoteInProzent + '}';
+        return String.format("GehoertZuPruefung ID: %s, Kurs: %s, Pruefung: %s, Anteil: %s%%",
+                id != null ? id.toString() : "n/a",
+                kurs != null ? kurs.getBezeichnung() : "n/a",
+                pruefung != null ? pruefung.getBezeichnung() : "n/a",
+                anteilGesamtnoteInProzent != null ? anteilGesamtnoteInProzent.toString() : "n/a");
     }
 
     @Override

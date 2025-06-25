@@ -22,14 +22,14 @@ public class Studienprogramm {
     @Column(name = "Regelstudienzeit_in_Semester")
     private Integer regelstudienzeitInSemester;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "ProfessorID", nullable = false)
     private Professor programmleiter;
 
-    @OneToMany(mappedBy = "studienprogramm")
+    @OneToMany(mappedBy = "studienprogramm", fetch = FetchType.EAGER)
     private List<Kurs> kurse = new ArrayList<>();
 
-    @ManyToMany(mappedBy = "gewaehlteStudienprogramme")
+    @ManyToMany(mappedBy = "gewaehlteStudienprogramme", fetch = FetchType.EAGER)
     private Set<Student> studenten = new HashSet<>();
 
     public Studienprogramm() {
@@ -139,7 +139,7 @@ public class Studienprogramm {
 
     @Override
     public String toString() {
-        return "Studienprogramm{" + "studienprogrammId=" + studienprogrammId + ", name='" + name + '\'' + ", abschluss='" + abschluss + '\'' + ", regelstudienzeitInSemester=" + regelstudienzeitInSemester + '}';
+        return String.format("Studienprogramm ID: %s, Name: %-30s, Abschluss: %-10s, Regelstudienzeit: %s Semester, Programmleiter: %s", studienprogrammId != null ? studienprogrammId.toString() : "n/a", name != null ? name : "n/a", abschluss != null ? abschluss : "n/a", regelstudienzeitInSemester != null ? regelstudienzeitInSemester.toString() : "n/a", programmleiter != null ? programmleiter.getVorname() + " " + programmleiter.getNachname() : "n/a");
     }
 
     @Override

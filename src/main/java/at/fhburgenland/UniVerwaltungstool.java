@@ -2,17 +2,12 @@ package at.fhburgenland;
 
 import at.fhburgenland.dao.*;
 import at.fhburgenland.model.*;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.EntityNotFoundException;
-import jakarta.persistence.Persistence;
+import jakarta.persistence.*;
 
 import static at.fhburgenland.helper.ScannerHelper.readInt;
 
 import java.time.LocalDate;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
-import java.util.Scanner;
+import java.util.*;
 
 public class UniVerwaltungstool {
     private static final EntityManagerFactory emf = Persistence.createEntityManagerFactory("uni");
@@ -218,13 +213,13 @@ public class UniVerwaltungstool {
             return;
         }
 
-        System.out.println("Student: " + student.getVorname() + " " + student.getNachname() + " (ID: " + student.getStudentId() + ")");
+        System.out.printf("Student: %s %s (ID: %d)%n", student.getVorname(), student.getNachname(), student.getStudentId());
         System.out.println("Eingeschriebene Studienprogramme:");
 
         if (student.getGewaehlteStudienprogramme().isEmpty()) {
             System.out.println("Der Student ist in keinem Studienprogramm eingeschrieben.");
         } else {
-            student.getGewaehlteStudienprogramme().stream().sorted(Comparator.comparing(Studienprogramm::getStudienprogrammId)).forEach(sp -> System.out.println("  - " + sp.getStudienprogrammId() + ": " + sp.getName()));
+            student.getGewaehlteStudienprogramme().stream().sorted(Comparator.comparing(Studienprogramm::getStudienprogrammId)).forEach(sp -> System.out.printf("  - %d: %s%n", sp.getStudienprogrammId(), sp.getName()));
         }
     }
 
@@ -238,13 +233,13 @@ public class UniVerwaltungstool {
             return;
         }
 
-        System.out.println("Student: " + student.getVorname() + " " + student.getNachname() + " (ID: " + student.getStudentId() + ")");
+        System.out.printf("Student: %s %s (ID: %d)%n", student.getVorname(), student.getNachname(), student.getStudentId());
         System.out.println("Gewählte Kurse:");
 
         if (student.getBesuchteKurse().isEmpty()) {
             System.out.println("Der Student hat keine Kurse besucht.");
         } else {
-            student.getBesuchteKurse().stream().sorted(Comparator.comparing(Besucht::getId)).forEach(besucht -> System.out.println("  - " + besucht.getKurs().getKursId() + ": " + besucht.getKurs().getBezeichnung()));
+            student.getBesuchteKurse().stream().sorted(Comparator.comparing(Besucht::getId)).forEach(besucht -> System.out.printf("  - %d: %s%n", besucht.getKurs().getKursId(), besucht.getKurs().getBezeichnung()));
         }
     }
 
@@ -258,13 +253,13 @@ public class UniVerwaltungstool {
             return;
         }
 
-        System.out.println("Student: " + student.getVorname() + " " + student.getNachname() + " (ID: " + student.getStudentId() + ")");
+        System.out.printf("Student: %s %s (ID: %d)%n", student.getVorname(), student.getNachname(), student.getStudentId());
         System.out.println("Absolvierte Prüfungen:");
 
         if (student.getAbsolviertePruefungen().isEmpty()) {
             System.out.println("Der Student hat keine Prüfungen absolviert.");
         } else {
-            student.getAbsolviertePruefungen().stream().sorted(Comparator.comparing(Absolviert::getId)).forEach(absolviert -> System.out.println("  - " + absolviert.getPruefung().getPruefungsId() + ": " + absolviert.getPruefung().getBezeichnung() + " (Note: " + absolviert.getNote().getBezeichnung() + ")"));
+            student.getAbsolviertePruefungen().stream().sorted(Comparator.comparing(Absolviert::getId)).forEach(absolviert -> System.out.printf("  - %d: %s (Note: %s)%n", absolviert.getPruefung().getPruefungsId(), absolviert.getPruefung().getBezeichnung(), absolviert.getNote().getBezeichnung()));
         }
     }
 
@@ -339,11 +334,13 @@ public class UniVerwaltungstool {
                             System.out.println("Student ist bereits in Studienprogramm " + sp.getName() + " eingeschrieben.");
                         } else {
                             student.addGewaehltesStudienprogramm(sp);
+                            studienprogrammDao.update(sp);
                             System.out.println("Studienprogramm " + sp.getName() + " wurde hinzugefügt.");
                         }
                     } else if (operation == '-') {
                         if (foundSp.isPresent()) {
                             student.removeGewaehltesStudienprogramm(foundSp.get());
+                            studienprogrammDao.update(foundSp.get());
                             System.out.println("Studienprogramm " + sp.getName() + " wurde entfernt.");
                         } else {
                             System.out.println("Student ist nicht in Studienprogramm " + sp.getName() + " eingeschrieben.");
@@ -451,13 +448,13 @@ public class UniVerwaltungstool {
             return;
         }
 
-        System.out.println("Professor: " + professor.getVorname() + " " + professor.getNachname() + " (ID: " + professor.getProfessorId() + ")");
+        System.out.printf("Professor: %s %s (ID: %d)%n", professor.getVorname(), professor.getNachname(), professor.getProfessorId());
         System.out.println("Zugeordnete Kurse:");
 
         if (professor.getUnterrichteteKurse().isEmpty()) {
             System.out.println("Der Professor hat keine Kurse zugeordnet.");
         } else {
-            professor.getUnterrichteteKurse().stream().sorted(Comparator.comparing(Kurs::getKursId)).forEach(kurs -> System.out.println("  - " + kurs.getKursId() + ": " + kurs.getBezeichnung()));
+            professor.getUnterrichteteKurse().stream().sorted(Comparator.comparing(Kurs::getKursId)).forEach(kurs -> System.out.printf("  - %d: %s%n", kurs.getKursId(), kurs.getBezeichnung()));
         }
     }
 
@@ -541,23 +538,59 @@ public class UniVerwaltungstool {
         String bezeichnung = scanner.nextLine();
 
         System.out.print("Semester: ");
-        int semester = Integer.parseInt(scanner.nextLine());
+        int semester = readInt(scanner);
 
         System.out.print("ECTS: ");
-        int ects = Integer.parseInt(scanner.nextLine());
+        int ects = readInt(scanner);
 
-        System.out.println("Zugehöriges Studienprogramm:");
+        System.out.println("Verfügbare Studienprogramme:");
         studienprogrammDao.findAll().forEach(System.out::println);
         System.out.print("Studienprogramm (Id): ");
         Studienprogramm studienprogramm;
         int studienprogrammId = readInt(scanner);
-       studienprogramm = studienprogrammDao.findById(studienprogrammId);
+        studienprogramm = studienprogrammDao.findById(studienprogrammId);
         if (studienprogramm == null) {
             System.out.println("Kein Studienprogramm mit dieser Id gefunden!");
             return;
         }
 
         Kurs kurs = new Kurs().bezeichnung(bezeichnung).semester(semester).ects(ects).studienprogramm(studienprogramm);
+
+        System.out.print("Möchten Sie Professoren zuordnen? (j/n)");
+        if (scanner.nextLine().equalsIgnoreCase("j")) {
+            System.out.println("Verfügbare Professoren:");
+            List<Professor> professoren = professorDao.findAll();
+
+            if (professoren.isEmpty()) {
+                System.out.println("Keine Professoren verfügbar.");
+            } else {
+                professoren.forEach(System.out::println);
+
+                System.out.println("Geben Sie die Professor-IDs ein, die Sie hinzufügen möchten.");
+                System.out.println("Format: ID1,ID2,ID3,...");
+                String input = scanner.nextLine();
+
+                if (!input.isEmpty()) {
+                    String[] ids = input.split(",");
+                    for (String idStr : ids) {
+                        try {
+                            int profId = Integer.parseInt(idStr.trim());
+                            Professor professor = professorDao.findById(profId);
+
+                            if (professor == null) {
+                                System.out.println("Professor mit ID " + profId + " nicht gefunden.");
+                                continue;
+                            }
+
+                            kurs.addProfessor(professor);
+                            System.out.println("Professor " + professor.getVorname() + " " + professor.getNachname() + " hinzugefügt.");
+                        } catch (NumberFormatException e) {
+                            System.out.println("Ungültige ID: " + idStr);
+                        }
+                    }
+                }
+            }
+        }
 
         Kurs addedKurs = kursDao.save(kurs);
         if (addedKurs != null) {
@@ -567,8 +600,94 @@ public class UniVerwaltungstool {
         }
     }
 
-    private void kursAnzeigenMenu(){
-        kursDao.findAll().forEach(System.out::println);
+    private void kursAnzeigenMenu() {
+        boolean isRunning = true;
+        while (isRunning) {
+            System.out.print("""
+                    ------Kurse Anzeigen------
+                    0. Zurück
+                    1. Alle Kurse anzeigen
+                    2. Professoren eines Kurses anzeigen
+                    3. Studenten eines Kurses anzeigen
+                    4. Prüfungen eines Kurses anzeigen
+                    -------------------
+                    Eingabe:""");
+
+            switch (scanner.nextLine()) {
+                case "0" -> isRunning = false;
+                case "1" -> kursDao.findAll().forEach(System.out::println);
+                case "2" -> showKursProfessoren();
+                case "3" -> showKursStudenten();
+                case "4" -> showKursPruefungen();
+                default -> System.out.println("Ungültige Eingabe!");
+            }
+        }
+    }
+
+    private void showKursProfessoren() {
+        System.out.print("ID des Kurses: ");
+        int kursId = readInt(scanner);
+        Kurs kurs = kursDao.findById(kursId);
+
+        if (kurs == null) {
+            System.out.println("Kein Kurs mit dieser ID gefunden.");
+            return;
+        }
+
+        System.out.printf("Kurs: %s (ID: %d)%n", kurs.getBezeichnung(), kurs.getKursId());
+        System.out.println("Zugewiesene Professoren:");
+
+        if (kurs.getProfessoren().isEmpty()) {
+            System.out.println("Keine Professoren für diesen Kurs zugewiesen.");
+        } else {
+            kurs.getProfessoren().stream().sorted(Comparator.comparing(Professor::getProfessorId)).forEach(prof -> System.out.printf("  - %d: %s %s%n", prof.getProfessorId(), prof.getVorname(), prof.getNachname()));
+        }
+    }
+
+    private void showKursStudenten() {
+        System.out.print("ID des Kurses: ");
+        int kursId = readInt(scanner);
+        Kurs kurs = kursDao.findById(kursId);
+
+        if (kurs == null) {
+            System.out.println("Kein Kurs mit dieser ID gefunden.");
+            return;
+        }
+
+        System.out.printf("Kurs: %s (ID: %d)%n", kurs.getBezeichnung(), kurs.getKursId());
+        System.out.println("Eingeschriebene Studenten:");
+
+        if (kurs.getTeilnehmendeStudenten().isEmpty()) {
+            System.out.println("Keine Studenten für diesen Kurs eingeschrieben.");
+        } else {
+            kurs.getTeilnehmendeStudenten().stream().sorted(Comparator.comparing(Besucht::getId)).forEach(besucht -> {
+                Student student = besucht.getStudent();
+                System.out.printf("  - %d: %s %s (Matrikelnr: %s)%n", student.getStudentId(), student.getVorname(), student.getNachname(), student.getMatrikelnummer());
+            });
+        }
+    }
+
+    private void showKursPruefungen() {
+        System.out.print("ID des Kurses: ");
+        int kursId = readInt(scanner);
+        Kurs kurs = kursDao.findById(kursId);
+
+        if (kurs == null) {
+            System.out.println("Kein Kurs mit dieser ID gefunden.");
+            return;
+        }
+
+        System.out.printf("Kurs: %s (ID: %d)%n", kurs.getBezeichnung(), kurs.getKursId());
+        System.out.println("Zugeordnete Prüfungen:");
+
+        if (kurs.getZugehoerigePruefungen().isEmpty()) {
+            System.out.println("Keine Prüfungen für diesen Kurs zugeordnet.");
+        } else {
+            kurs.getZugehoerigePruefungen().stream().sorted(Comparator.comparing(GehoertZuPruefung::getId)).forEach(zuordnung -> {
+                Pruefung pruefung = zuordnung.getPruefung();
+                System.out.printf("  - %d: %s%s%n", pruefung.getPruefungsId(), pruefung.getBezeichnung(), pruefung.getDatum() != null ? " (Datum: " + pruefung.getDatum() + ")" : "");
+            });
+        }
     }
 
     private void updateKurs() {
@@ -597,26 +716,77 @@ public class UniVerwaltungstool {
             }
         }
 
-            System.out.print("Neue ECTS (aktuell: " + kurs.getEcts() + "): ");
-            String ectsEingabe = scanner.nextLine();
-            if (!ectsEingabe.isEmpty()) {
+        System.out.print("Neue ECTS (aktuell: " + kurs.getEcts() + "): ");
+        String ectsEingabe = scanner.nextLine();
+        if (!ectsEingabe.isEmpty()) {
+            try {
+                int kursEcts = Integer.parseInt(ectsEingabe);
+                kurs.setEcts(kursEcts);
+            } catch (NumberFormatException e) {
+                System.out.println("Ungültige Eingabe. Ects wurde nicht geändert.");
+            }
+        }
+
+        System.out.print("Möchten sie das zugehöriges Studienprogramm ändern? (aktuell: " + kurs.getStudienprogramm().getName() + "): j/n");
+        if (scanner.nextLine().equalsIgnoreCase("j")) {
+            int studienprogrammId = readInt(scanner);
+            try {
+                Studienprogramm studienprogramm = studienprogrammDao.findById(studienprogrammId);
+                kurs.setStudienprogramm(studienprogramm);
+            } catch (EntityNotFoundException e) {
+                System.out.println("Kein Studienprogramm mit dieser Id gefunden: " + studienprogrammId);
+            }
+        }
+
+        System.out.println("Zugewiesene Professoren:");
+        if (kurs.getProfessoren().isEmpty()) {
+            System.out.println("Keine Professoren zugewiesen.");
+        } else {
+            kurs.getProfessoren().forEach(prof -> System.out.println(prof.getProfessorId() + ": " + prof.getVorname() + " " + prof.getNachname()));
+        }
+
+        System.out.print("Professoren ändern im Format '+ID,-ID,+ID' (z.B. '+1,-5,+4' oder leer für keine Änderung): ");
+        String input = scanner.nextLine().trim();
+
+        if (!input.isEmpty()) {
+            String[] changes = input.split(",");
+            for (String change : changes) {
+                change = change.trim();
+                if (change.length() < 2) continue;
+
+                char operation = change.charAt(0);
                 try {
-                    int kursEcts = Integer.parseInt(ectsEingabe);
-                    kurs.setEcts(kursEcts);
+                    int profId = Integer.parseInt(change.substring(1));
+                    Professor prof = professorDao.findById(profId);
+
+                    if (prof == null) {
+                        System.out.println("Professor mit ID " + profId + " nicht gefunden.");
+                        continue;
+                    }
+
+                    Optional<Professor> foundProf = kurs.getProfessoren().stream().filter(s -> s.getProfessorId() == profId).findFirst();
+
+                    if (operation == '+') {
+                        if (foundProf.isPresent()) {
+                            System.out.println("Professor " + prof.getVorname() + " " + prof.getNachname() + " ist bereits zugewiesen.");
+                        } else {
+                            kurs.addProfessor(prof);
+                            professorDao.update(prof);
+                            System.out.println("Professor " + prof.getVorname() + " " + prof.getNachname() + " wurde hinzugefügt.");
+                        }
+                    } else if (operation == '-') {
+                        if (foundProf.isPresent()) {
+                            kurs.removeProfessor(foundProf.get());
+                            professorDao.update(foundProf.get());
+                            System.out.println("Professor " + prof.getVorname() + " " + prof.getNachname() + " wurde entfernt.");
+                        } else {
+                            System.out.println("Professor " + prof.getVorname() + " " + prof.getNachname() + " ist nicht zugewiesen.");
+                        }
+                    }
                 } catch (NumberFormatException e) {
-                    System.out.println("Ungültige Eingabe. Ects wurde nicht geändert.");
+                    System.out.println("Ungültige ID in: " + change);
                 }
             }
-
-                System.out.println("Möchten sie das zugehöriges Studienprogramm ändern? (aktuell: " + kurs.getStudienprogramm() + "): j/n");
-        if (scanner.nextLine().equalsIgnoreCase("j")) {
-                int studienprogrammId = readInt(scanner);
-                try{
-                Studienprogramm studienprogramm = studienprogrammDao.findById(studienprogrammId);
-                    kurs.setStudienprogramm(studienprogramm);}
-                catch(EntityNotFoundException e){
-                    System.out.println("Kein Studienprogramm mit dieser Id gefunden: " + studienprogrammId);
-                }
         }
 
         Kurs updatedKurs = kursDao.update(kurs);
@@ -625,19 +795,16 @@ public class UniVerwaltungstool {
         } else {
             System.out.println("Fehler beim Aktualisieren des Kurses.");
         }
-
     }
 
-        private void deleteKurs() {
-            System.out.print("Id des zu löschenden Kurses: ");
-            if (kursDao.deleteById(readInt(scanner))) {
-                System.out.println("Kurs erfolgreich gelöscht.");
-            } else {
-                System.out.println("Kein Kurs mit dieser Id gefunden.");
-            }
-
+    private void deleteKurs() {
+        System.out.print("Id des zu löschenden Kurses: ");
+        if (kursDao.deleteById(readInt(scanner))) {
+            System.out.println("Kurs erfolgreich gelöscht.");
+        } else {
+            System.out.println("Kein Kurs mit dieser Id gefunden.");
         }
-
+    }
 
     private void pruefungenMenu() {
         boolean isRunning = true;
@@ -670,8 +837,7 @@ public class UniVerwaltungstool {
         }
 
         System.out.println("Verfügbare Prüfungstypen:");
-        List<Pruefungstyp> typen = pruefungstypDao.findAll();
-        typen.forEach(pt -> System.out.println("  " + pt.getTypId() + ": " + pt.getBezeichnung()));
+        pruefungstypDao.findAll().forEach(pt -> System.out.println("  " + pt.getTypId() + ": " + pt.getBezeichnung()));
         System.out.print("ID des Prüfungstyps: ");
         int typId = readInt(scanner);
         Pruefungstyp typ = pruefungstypDao.findById(typId);
@@ -683,14 +849,81 @@ public class UniVerwaltungstool {
         Pruefung pruefung = new Pruefung().bezeichnung(bezeichnung).datum(datum).pruefungstyp(typ);
 
         Pruefung created = pruefungDao.save(pruefung);
-        if (created != null) {System.out.println("Prüfung erfolgreich erstellt.");}
-        else {
+        if (created != null) {
+            System.out.println("Prüfung erfolgreich erstellt.");
+        } else {
             System.out.println("Fehler beim Erstellen der Prüfung.");
         }
     }
 
-    private void pruefungAnzeigenMenu(){
-        pruefungDao.findAll().forEach(System.out::println);
+    private void pruefungAnzeigenMenu() {
+        boolean isRunning = true;
+        while (isRunning) {
+            System.out.print("""
+                    ------Prüfungen Anzeigen------
+                    0. Zurück
+                    1. Alle Prüfungen anzeigen
+                    2. Kurse einer Prüfung anzeigen
+                    3. Absolvierte Prüfung pro Kurs anzeigen
+                    -------------------
+                    Eingabe:""");
+
+            switch (scanner.nextLine()) {
+                case "0" -> isRunning = false;
+                case "1" -> pruefungDao.findAll().forEach(System.out::println);
+                case "2" -> showPruefungKurse();
+                case "3" -> showPruefungVersuche();
+                default -> System.out.println("Ungültige Eingabe!");
+            }
+        }
+    }
+
+    private void showPruefungKurse() {
+        System.out.print("ID der Prüfung: ");
+        int pruefungId = readInt(scanner);
+        Pruefung pruefung = pruefungDao.findById(pruefungId);
+
+        if (pruefung == null) {
+            System.out.println("Keine Prüfung mit dieser ID gefunden.");
+            return;
+        }
+
+        System.out.printf("Prüfung: %s (ID: %d)%n", pruefung.getBezeichnung(), pruefung.getPruefungsId());
+        System.out.println("Zugeordnete Kurse:");
+
+        if (pruefung.getZugehoerigeKurse().isEmpty()) {
+            System.out.println("Keine Kurse für diese Prüfung zugeordnet.");
+        } else {
+            pruefung.getZugehoerigeKurse().stream().sorted(Comparator.comparing(GehoertZuPruefung::getId)).forEach(zuordnung -> {
+                Kurs kurs = zuordnung.getKurs();
+                System.out.printf("  - %d: %s%n", kurs.getKursId(), kurs.getBezeichnung());
+            });
+        }
+    }
+
+    private void showPruefungVersuche() {
+        System.out.print("ID der Prüfung: ");
+        int pruefungId = readInt(scanner);
+        Pruefung pruefung = pruefungDao.findById(pruefungId);
+
+        if (pruefung == null) {
+            System.out.println("Keine Prüfung mit dieser ID gefunden.");
+            return;
+        }
+
+        System.out.printf("Prüfung: %s (ID: %d)%n", pruefung.getBezeichnung(), pruefung.getPruefungsId());
+        System.out.println("Absolvierte Prüfungsversuche:");
+
+        if (pruefung.getAbsolvierteVersuche().isEmpty()) {
+            System.out.println("Keine Prüfungsversuche für diese Prüfung gefunden.");
+        } else {
+            pruefung.getAbsolvierteVersuche().stream().sorted(Comparator.comparing(Absolviert::getId)).forEach(absolviert -> {
+                Student student = absolviert.getStudent();
+                Note note = absolviert.getNote();
+                int attempt = absolviert.getId().getVersuch();
+                System.out.printf("  - Student: %-20s (ID: %3d), Versuch: %d, Note: %s%n", student.getVorname() + " " + student.getNachname(), student.getStudentId(), attempt, note.getBezeichnung());
+            });
+        }
     }
 
     private void updatePruefung() {
@@ -763,7 +996,7 @@ public class UniVerwaltungstool {
             switch (scanner.nextLine()) {
                 case "0" -> isRunning = false;
                 case "1" -> addNote();
-                case "2" -> noteAnzeigenMenu();
+                case "2" -> showNote();
                 case "3" -> updateNote();
                 case "4" -> deleteNote();
                 default -> System.out.println("Ungültige Eingabe!");
@@ -798,7 +1031,7 @@ public class UniVerwaltungstool {
         }
     }
 
-    private void noteAnzeigenMenu() {
+    private void showNote() {
         List<Note> noten = noteDao.findAll();
         if (noten.isEmpty()) {
             System.out.println("Keine Noten vorhanden.");
@@ -808,7 +1041,6 @@ public class UniVerwaltungstool {
     }
 
     private void updateNote() {
-        noteAnzeigenMenu();
         System.out.print("ID der zu bearbeitenden Note: ");
         int id = readInt(scanner);
         Note note = noteDao.findById(id);
@@ -819,23 +1051,24 @@ public class UniVerwaltungstool {
         }
 
         System.out.print("Neue Bezeichnung (aktuell: " + note.getBezeichnung() + "): ");
-        String neueBezeichnung = scanner.nextLine();
+        String newBezeichnung = scanner.nextLine();
 
-        if (!neueBezeichnung.isBlank()) {
-            note.setBezeichnung(neueBezeichnung);
-            Note updated = noteDao.update(note);
-            if (updated != null) {
-                System.out.println("Note erfolgreich aktualisiert.");
-            } else {
-                System.out.println("Fehler beim Aktualisieren der Note.");
-            }
-        } else {
+        if (newBezeichnung.isBlank()) {
             System.out.println("Keine Änderung vorgenommen.");
+            return;
+        }
+
+        note.setBezeichnung(newBezeichnung);
+
+        Note updated = noteDao.update(note);
+        if (updated != null) {
+            System.out.println("Note erfolgreich aktualisiert.");
+        } else {
+            System.out.println("Fehler beim Aktualisieren der Note.");
         }
     }
 
     private void deleteNote() {
-        noteAnzeigenMenu();
         System.out.print("ID der zu löschenden Note: ");
         int id = readInt(scanner);
 
@@ -870,7 +1103,7 @@ public class UniVerwaltungstool {
 
         Fachabteilung fachabteilung = new Fachabteilung().name(name).standort(standort);
 
-        Fachabteilung addedFachabteilung =fachabteilungDao.save(fachabteilung);
+        Fachabteilung addedFachabteilung = fachabteilungDao.save(fachabteilung);
         if (addedFachabteilung != null) {
             System.out.println("Fachabteilung erfolgreich hinzugefügt.");
         } else {
@@ -878,8 +1111,44 @@ public class UniVerwaltungstool {
         }
     }
 
-    private void fachabteilungAnzeigenMenu(){
-        fachabteilungDao.findAll().forEach(System.out::println);
+    private void fachabteilungAnzeigenMenu() {
+        boolean isRunning = true;
+        while (isRunning) {
+            System.out.print("""
+                    ------Fachabteilungen Anzeigen------
+                    0. Zurück
+                    1. Alle Fachabteilungen anzeigen
+                    2. Professoren einer Fachabteilung anzeigen
+                    -------------------
+                    Eingabe:""");
+
+            switch (scanner.nextLine()) {
+                case "0" -> isRunning = false;
+                case "1" -> fachabteilungDao.findAll().forEach(System.out::println);
+                case "2" -> showFachabteilungProfessoren();
+                default -> System.out.println("Ungültige Eingabe!");
+            }
+        }
+    }
+
+    private void showFachabteilungProfessoren() {
+        System.out.print("ID der Fachabteilung: ");
+        int abteilungsId = readInt(scanner);
+        Fachabteilung fachabteilung = fachabteilungDao.findById(abteilungsId);
+
+        if (fachabteilung == null) {
+            System.out.println("Keine Fachabteilung mit dieser ID gefunden.");
+            return;
+        }
+
+        System.out.printf("Fachabteilung: %s (ID: %d)%n", fachabteilung.getName(), fachabteilung.getAbteilungsId());
+        System.out.println("Zugehörige Professoren:");
+
+        if (fachabteilung.getProfessoren().isEmpty()) {
+            System.out.println("Keine Professoren in dieser Fachabteilung.");
+        } else {
+            fachabteilung.getProfessoren().stream().sorted(Comparator.comparing(Professor::getProfessorId)).forEach(prof -> System.out.printf("  - %d: %s %s%n", prof.getProfessorId(), prof.getVorname(), prof.getNachname()));
+        }
     }
 
     private void updateFachabteilung() {
@@ -917,7 +1186,6 @@ public class UniVerwaltungstool {
         } else {
             System.out.println("Keine Fachabteilung mit dieser Id gefunden.");
         }
-
     }
 
     private void studienprogrammMenu() {
@@ -943,19 +1211,24 @@ public class UniVerwaltungstool {
         String abschluss = scanner.nextLine();
 
         System.out.print("Regelstudienzeit in Semester: ");
-        int semester = Integer.parseInt(scanner.nextLine());
+        int semester = readInt(scanner);
 
         System.out.println("Leiter für das Studienprogramm auswählen:");
-        professorDao.findAll().forEach(System.out::println);
+        professorDao.findAll().stream().filter(professor -> professor.getStudienprogramm() == null).forEach(System.out::println);
         Professor studienprogrammLeiter = professorDao.findById(readInt(scanner));
         if (studienprogrammLeiter == null) {
             System.out.println("Kein Professor mit dieser Id gefunden.");
             return;
         }
 
+        if (studienprogrammLeiter.getStudienprogramm() != null) {
+            System.out.println("Dieser Professor ist bereits Leiter eines Studienprogramms.");
+            return;
+        }
+
         Studienprogramm studienprogramm = new Studienprogramm().name(name).abschluss(abschluss).regelstudienzeitInSemester(semester).programmleiter(studienprogrammLeiter);
 
-        Studienprogramm addedStudienprogramm =studienprogrammDao.save(studienprogramm);
+        Studienprogramm addedStudienprogramm = studienprogrammDao.save(studienprogramm);
         if (addedStudienprogramm != null) {
             System.out.println("Studienprogramm erfolgreich hinzugefügt.");
         } else {
@@ -963,8 +1236,66 @@ public class UniVerwaltungstool {
         }
     }
 
-    private void studienprogrammeAnzeigenMenu(){
-        studienprogrammDao.findAll().forEach(System.out::println);
+    private void studienprogrammeAnzeigenMenu() {
+        boolean isRunning = true;
+        while (isRunning) {
+            System.out.print("""
+                    ------Studienprogramme Anzeigen------
+                    0. Zurück
+                    1. Alle Studienprogramme anzeigen
+                    2. Kurse eines Studienprogramms anzeigen
+                    3. Studenten eines Studienprogramms anzeigen
+                    -------------------
+                    Eingabe:""");
+
+            switch (scanner.nextLine()) {
+                case "0" -> isRunning = false;
+                case "1" -> studienprogrammDao.findAll().forEach(System.out::println);
+                case "2" -> showStudienprogrammKurse();
+                case "3" -> showStudienprogrammStudenten();
+                default -> System.out.println("Ungültige Eingabe!");
+            }
+        }
+    }
+
+    private void showStudienprogrammKurse() {
+        System.out.print("ID des Studienprogramms: ");
+        int studienprogrammId = readInt(scanner);
+        Studienprogramm studienprogramm = studienprogrammDao.findById(studienprogrammId);
+
+        if (studienprogramm == null) {
+            System.out.println("Kein Studienprogramm mit dieser ID gefunden.");
+            return;
+        }
+
+        System.out.printf("Studienprogramm: %s (ID: %d)%n", studienprogramm.getName(), studienprogramm.getStudienprogrammId());
+        System.out.println("Zugehörige Kurse:");
+
+        if (studienprogramm.getKurse().isEmpty()) {
+            System.out.println("Keine Kurse in diesem Studienprogramm.");
+        } else {
+            studienprogramm.getKurse().stream().sorted(Comparator.comparing(Kurs::getKursId)).forEach(kurs -> System.out.printf("  - %d: %s (Semester: %d, ECTS: %d)%n", kurs.getKursId(), kurs.getBezeichnung(), kurs.getSemester(), kurs.getEcts()));
+        }
+    }
+
+    private void showStudienprogrammStudenten() {
+        System.out.print("ID des Studienprogramms: ");
+        int studienprogrammId = readInt(scanner);
+        Studienprogramm studienprogramm = studienprogrammDao.findById(studienprogrammId);
+
+        if (studienprogramm == null) {
+            System.out.println("Kein Studienprogramm mit dieser ID gefunden.");
+            return;
+        }
+
+        System.out.printf("Studienprogramm: %s (ID: %d)%n", studienprogramm.getName(), studienprogramm.getStudienprogrammId());
+        System.out.println("Eingeschriebene Studenten:");
+
+        if (studienprogramm.getStudenten().isEmpty()) {
+            System.out.println("Keine Studenten in diesem Studienprogramm eingeschrieben.");
+        } else {
+            studienprogramm.getStudenten().stream().sorted(Comparator.comparing(Student::getStudentId)).forEach(student -> System.out.printf("  - %d: %s %s (Matrikelnr: %s)%n", student.getStudentId(), student.getVorname(), student.getNachname(), student.getMatrikelnummer()));
+        }
     }
 
     private void updateStudienprogramm() {
@@ -998,16 +1329,23 @@ public class UniVerwaltungstool {
             }
         }
 
-        System.out.println("Möchten sie den Studienprogrammleiter ändern? (aktuell: " + studienprogramm.getProgrammleiter() + "): j/n");
+        System.out.print("Möchten sie den Studienprogrammleiter ändern? (aktuell: " + studienprogramm.getProgrammleiter() + "): j/n");
         if (scanner.nextLine().equalsIgnoreCase("j")) {
-            professorDao.findAll().forEach(System.out::println);
+            professorDao.findAll().stream().filter(professor -> professor.getStudienprogramm() == null).forEach(System.out::println);
             int studienprogrammLeiterID = readInt(scanner);
-            try{
-                Professor studienprogrammLeiter = professorDao.findById(studienprogrammLeiterID);
-                studienprogramm.setProgrammleiter(studienprogrammLeiter);}
-            catch(EntityNotFoundException e){
-                System.out.println("Kein Professor mit dieser Id gefunden: "+ studienprogrammLeiterID);
+            Professor studienprogrammLeiter = professorDao.findById(studienprogrammLeiterID);
+
+            if (studienprogrammLeiter == null) {
+                System.out.println("Kein Professor mit dieser Id gefunden.");
+                return;
             }
+
+            if (studienprogrammLeiter.getStudienprogramm() != null) {
+                System.out.println("Dieser Professor ist bereits Leiter eines Studienprogramms.");
+                return;
+            }
+
+            studienprogramm.setProgrammleiter(studienprogrammLeiter);
         }
 
         Studienprogramm updatedStudienprogramm = studienprogrammDao.update(studienprogramm);
@@ -1025,7 +1363,6 @@ public class UniVerwaltungstool {
         } else {
             System.out.println("Kein Studienprogramm mit dieser Id gefunden.");
         }
-
     }
 
     private void pruefungstypMenu() {
@@ -1035,7 +1372,7 @@ public class UniVerwaltungstool {
             switch (scanner.nextLine()) {
                 case "0" -> isRunning = false;
                 case "1" -> addPruefungstyp();
-                case "2" -> pruefungstypenAnzeigenMenu();
+                case "2" -> showPruefungstypen();
                 case "3" -> updatePruefungstyp();
                 case "4" -> deletePruefungstyp();
                 default -> System.out.println("Ungültige Eingabe!");
@@ -1062,7 +1399,7 @@ public class UniVerwaltungstool {
         }
     }
 
-    private void pruefungstypenAnzeigenMenu() {
+    private void showPruefungstypen() {
         List<Pruefungstyp> typen = pruefungstypDao.findAll();
         if (typen.isEmpty()) {
             System.out.println("Keine Prüfungstypen vorhanden.");
@@ -1072,7 +1409,6 @@ public class UniVerwaltungstool {
     }
 
     private void updatePruefungstyp() {
-        pruefungstypenAnzeigenMenu();
         System.out.print("ID des zu bearbeitenden Prüfungstyps: ");
         int id = readInt(scanner);
         Pruefungstyp typ = pruefungstypDao.findById(id);
@@ -1098,7 +1434,6 @@ public class UniVerwaltungstool {
     }
 
     private void deletePruefungstyp() {
-        pruefungstypenAnzeigenMenu();
         System.out.print("ID des zu löschenden Prüfungstyps: ");
         int id = readInt(scanner);
 
@@ -1108,5 +1443,4 @@ public class UniVerwaltungstool {
             System.out.println("Kein Prüfungstyp mit dieser ID gefunden oder bereits verwendet.");
         }
     }
-
 }

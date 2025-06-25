@@ -81,7 +81,10 @@ public class Fachabteilung {
 
     @Override
     public String toString() {
-        return "Fachabteilung{" + "abteilungsId=" + abteilungsId + ", standort='" + standort + '\'' + ", name='" + name + '\'' + '}';
+        return String.format("Fachabteilung ID: %s, Name: %s, Standort: %s",
+                abteilungsId != null ? abteilungsId.toString() : "n/a",
+                name != null ? name : "n/a",
+                standort != null ? standort : "n/a");
     }
 
     @Override

@@ -73,7 +73,11 @@ public class Absolviert {
 
     @Override
     public String toString() {
-        return "Absolviert{" + "id=" + id + ", student=" + student + ", pruefung=" + pruefung + ", note=" + note + '}';
+        return String.format("Absolviert ID: %s, Student: %s, Pruefung: %s, Note: %s",
+                id != null ? id.toString() : "n/a",
+                student != null ? student.getVorname() + " " + student.getNachname() : "n/a",
+                pruefung != null ? pruefung.getBezeichnung() : "n/a",
+                note != null ? note.getBezeichnung() : "n/a");
     }
 
     @Override

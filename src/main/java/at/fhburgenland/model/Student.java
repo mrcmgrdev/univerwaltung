@@ -30,9 +30,9 @@ public class Student {
     private LocalDate geburtsdatum;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "Waehlt", 
-        joinColumns = @JoinColumn(name = "StudentID"), 
-        inverseJoinColumns = @JoinColumn(name = "StudienprogrammID"))
+    @JoinTable(name = "Waehlt",
+            joinColumns = @JoinColumn(name = "StudentID"),
+            inverseJoinColumns = @JoinColumn(name = "StudienprogrammID"))
     private Set<Studienprogramm> gewaehlteStudienprogramme = new HashSet<>();
 
     @OneToMany(mappedBy = "student", fetch = FetchType.EAGER)
@@ -164,7 +164,12 @@ public class Student {
 
     @Override
     public String toString() {
-        return "Student{" + "studentId=" + studentId + ", vorname='" + vorname + '\'' + ", nachname='" + nachname + '\'' + ", matrikelnummer='" + matrikelnummer + '\'' + ", email='" + email + '\'' + ", geburtsdatum=" + geburtsdatum + '}';
+        return String.format("Student ID: %s, Name: %-20s, Matrikelnr: %-10s, Email: %-30s, Geburtsdatum: %s",
+                studentId != null ? studentId.toString() : "n/a",
+                vorname + " " + nachname,
+                matrikelnummer != null ? matrikelnummer : "n/a",
+                email != null ? email : "n/a",
+                geburtsdatum != null ? geburtsdatum.toString() : "n/a");
     }
 
     @Override

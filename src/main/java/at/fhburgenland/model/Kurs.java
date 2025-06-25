@@ -22,18 +22,18 @@ public class Kurs {
     @Column(name = "ECTS")
     private Integer ects;
 
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "StudienprogrammID", nullable = false)
     private Studienprogramm studienprogramm;
 
-    @ManyToMany(mappedBy = "unterrichteteKurse")
-    private Set<Professor> professoren = new HashSet<>();
+    @ManyToMany(mappedBy = "unterrichteteKurse", fetch = FetchType.EAGER)
+    private List<Professor> professoren = new ArrayList<>();
 
-    @OneToMany(mappedBy = "kurs")
-    private Set<Besucht> teilnehmendeStudenten = new HashSet<>();
+    @OneToMany(mappedBy = "kurs", fetch = FetchType.EAGER)
+    private List<Besucht> teilnehmendeStudenten = new ArrayList<>();
 
-    @OneToMany(mappedBy = "kurs")
-    private Set<GehoertZuPruefung> zugehoerigePruefungen = new HashSet<>();
+    @OneToMany(mappedBy = "kurs", fetch = FetchType.EAGER)
+    private List<GehoertZuPruefung> zugehoerigePruefungen = new ArrayList<>();
 
     public Kurs() {
     }
@@ -42,6 +42,7 @@ public class Kurs {
         this.professoren.add(professor);
         professor.getUnterrichteteKurse().add(this);
     }
+
     public void removeProfessor(Professor professor) {
         this.professoren.remove(professor);
         professor.getUnterrichteteKurse().remove(this);
@@ -103,58 +104,63 @@ public class Kurs {
         return this;
     }
 
-    public void setProfessoren(Set<Professor> professoren) {
+    public void setProfessoren(List<Professor> professoren) {
         this.professoren = professoren;
     }
 
-    public Set<Professor> getProfessoren() {
+    public List<Professor> getProfessoren() {
         return professoren;
     }
 
-    public Kurs professoren(Set<Professor> professoren) {
+    public Kurs professoren(List<Professor> professoren) {
         this.professoren = professoren;
         return this;
     }
 
-    public void setTeilnehmendeStudenten(Set<Besucht> teilnehmendeStudenten) {
+    public void setTeilnehmendeStudenten(List<Besucht> teilnehmendeStudenten) {
         this.teilnehmendeStudenten = teilnehmendeStudenten;
     }
 
-    public Set<Besucht> getTeilnehmendeStudenten() {
+    public List<Besucht> getTeilnehmendeStudenten() {
         return teilnehmendeStudenten;
     }
 
-    public Kurs teilnehmendeStudenten(Set<Besucht> teilnehmendeStudenten) {
+    public Kurs teilnehmendeStudenten(List<Besucht> teilnehmendeStudenten) {
         this.teilnehmendeStudenten = teilnehmendeStudenten;
         return this;
     }
 
-    public void setZugehoerigePruefungen(Set<GehoertZuPruefung> zugehoerigePruefungen) {
+    public void setZugehoerigePruefungen(List<GehoertZuPruefung> zugehoerigePruefungen) {
         this.zugehoerigePruefungen = zugehoerigePruefungen;
     }
 
-    public Set<GehoertZuPruefung> getZugehoerigePruefungen() {
+    public List<GehoertZuPruefung> getZugehoerigePruefungen() {
         return zugehoerigePruefungen;
     }
 
-    public Kurs zugehoerigePruefungen(Set<GehoertZuPruefung> zugehoerigePruefungen) {
+    public Kurs zugehoerigePruefungen(List<GehoertZuPruefung> zugehoerigePruefungen) {
         this.zugehoerigePruefungen = zugehoerigePruefungen;
         return this;
     }
 
     @Override
     public String toString() {
-        return "Kurs{" + "kursId=" + kursId + ", bezeichnung='" + bezeichnung + '\'' + ", semester=" + semester + ", ects=" + ects + ", studienprogramm=" + studienprogramm + ", professoren=" + professoren + ", teilnehmendeStudenten=" + teilnehmendeStudenten + ", zugehoerigePruefungen=" + zugehoerigePruefungen + '}';
+        return String.format("Kurs ID: %s, Bezeichnung: %-30s, Semester: %s, ECTS: %s, Studienprogramm: %s",
+                kursId != null ? kursId.toString() : "n/a",
+                bezeichnung != null ? bezeichnung : "n/a",
+                semester != null ? semester.toString() : "n/a",
+                ects != null ? ects.toString() : "n/a",
+                studienprogramm != null ? studienprogramm.getName() : "n/a");
     }
 
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof Kurs kurs)) return false;
-        return Objects.equals(kursId, kurs.kursId) && Objects.equals(bezeichnung, kurs.bezeichnung) && Objects.equals(semester, kurs.semester) && Objects.equals(ects, kurs.ects) && Objects.equals(studienprogramm, kurs.studienprogramm) && Objects.equals(professoren, kurs.professoren) && Objects.equals(teilnehmendeStudenten, kurs.teilnehmendeStudenten) && Objects.equals(zugehoerigePruefungen, kurs.zugehoerigePruefungen);
+        return Objects.equals(kursId, kurs.kursId) && Objects.equals(bezeichnung, kurs.bezeichnung) && Objects.equals(semester, kurs.semester) && Objects.equals(ects, kurs.ects);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(kursId, bezeichnung, semester, ects, studienprogramm, professoren, teilnehmendeStudenten, zugehoerigePruefungen);
+        return Objects.hash(kursId, bezeichnung, semester, ects);
     }
 }
