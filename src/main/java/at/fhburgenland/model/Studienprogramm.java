@@ -10,7 +10,7 @@ public class Studienprogramm {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "StudienprogrammID")
+    @Column(name = "StudienprogrammID", nullable = false, updatable = false)
     private Integer studienprogrammId;
 
     @Column(name = "Name", nullable = false, length = 100)
@@ -33,26 +33,6 @@ public class Studienprogramm {
     private Set<Student> studenten = new HashSet<>();
 
     public Studienprogramm() {
-    }
-
-    public void addKurs(Kurs kurs) {
-        this.kurse.add(kurs);
-        kurs.setStudienprogramm(this);
-    }
-
-    public void removeKurs(Kurs kurs) {
-        this.kurse.remove(kurs);
-        kurs.setStudienprogramm(null);
-    }
-
-    public void addStudent(Student student) {
-        this.studenten.add(student);
-        student.getGewaehlteStudienprogramme().add(this);
-    }
-
-    public void removeStudent(Student student) {
-        this.studenten.remove(student);
-        student.getGewaehlteStudienprogramme().remove(this);
     }
 
     public Integer getStudienprogrammId() {
@@ -139,7 +119,7 @@ public class Studienprogramm {
 
     @Override
     public String toString() {
-        return String.format("Studienprogramm ID: %s, Name: %-30s, Abschluss: %-10s, Regelstudienzeit: %s Semester, Programmleiter: %s", studienprogrammId != null ? studienprogrammId.toString() : "n/a", name != null ? name : "n/a", abschluss != null ? abschluss : "n/a", regelstudienzeitInSemester != null ? regelstudienzeitInSemester.toString() : "n/a", programmleiter != null ? programmleiter.getVorname() + " " + programmleiter.getNachname() : "n/a");
+        return String.format("Studienprogramm ID: %s, Name: %-30s, Abschluss: %-10s, Regelstudienzeit: %s Semester, Programmleiter: %s", studienprogrammId.toString(), name, abschluss != null ? abschluss : "n/a", regelstudienzeitInSemester != null ? regelstudienzeitInSemester.toString() : "n/a", programmleiter != null ? programmleiter.getVorname() + " " + programmleiter.getNachname() : "n/a");
     }
 
     @Override

@@ -245,38 +245,3 @@ VALUES (1, 1, 1, 1),
        (8, 1, 4, 1),
        (9, 5, 1, 1),
        (10, 2, 3, 1);
-
---1) auflistung kurse mit minmale versuche , maximale versuche, durchschnittsversuche, durchschnittsnote pro versuch
-SELECT k.Bezeichnung                                            AS Kursname,
-       p.Bezeichnung                                            AS Pruefung,
-       pt.Bezeichnung                                           AS Pruefungstyp,
-       MIN(a.Versuch)                                           AS Min_Versuch,
-       MAX(a.Versuch)                                           AS Max_Versuch,
-       ROUND(AVG(a.Versuch), 2)                                 AS Avg_Versuch,
-       ROUND(AVG(CASE WHEN a.Versuch = 1 THEN a.NoteID END), 2) AS Avg_Note_Versuch_1,
-       ROUND(AVG(CASE WHEN a.Versuch = 2 THEN a.NoteID END), 2) AS Avg_Note_Versuch_2,
-       ROUND(AVG(CASE WHEN a.Versuch = 3 THEN a.NoteID END), 2) AS Avg_Note_Versuch_3
-FROM Absolviert a
-         JOIN Pruefung p ON a.PruefungsID = p.PruefungsID
-         JOIN Pruefungstyp pt ON p.TypID = pt.TypID
-         JOIN GehoertZuPruefung gzp ON p.PruefungsID = gzp.PruefungsID
-         JOIN Kurs k ON gzp.KursID = k.KursID
-GROUP BY 1, 2, 3
-ORDER BY 1, 2;
-
---2) Professor eingeben mit id und eine list bekommen welceh studeten aus welchen Studiengängen aus welchen fächern noch benotet werden müssen
-SELECT S.Vorname       AS Student_Vorname,
-       S.Nachname      AS Student_Nachname,
-       S.Matrikelnummer,
-       SP_Student.Name AS Student_Studiengang,
-       K.Bezeichnung   AS Kurs_Bezeichnung
-FROM Professor P
-         JOIN Unterrichtet U ON P.ProfessorID = U.ProfessorID
-         JOIN Kurs K ON U.KursID = K.KursID
-         JOIN Besucht B ON K.KursID = B.KursID
-         JOIN Student S ON B.StudentID = S.StudentID
-         JOIN Waehlt W ON S.StudentID = W.StudentID
-         JOIN Studienprogramm SP_Student ON W.StudienprogrammID = SP_Student.StudienprogrammID
-WHERE P.ProfessorID = 2
-  AND B.NoteID IS NULL
-ORDER BY 1, 2, 4, 5;

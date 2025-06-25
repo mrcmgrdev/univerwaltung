@@ -10,7 +10,7 @@ public class Pruefungstyp {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "TypID")
+    @Column(name = "TypID", nullable = false, updatable = false)
     private Integer typId;
 
     @Column(name = "Bezeichnung", nullable = false, length = 50)
@@ -20,16 +20,6 @@ public class Pruefungstyp {
     private List<Pruefung> pruefungen = new ArrayList<>();
 
     public Pruefungstyp() {
-    }
-
-    public void addPruefung(Pruefung pruefung) {
-        this.pruefungen.add(pruefung);
-        pruefung.setPruefungstyp(this);
-    }
-
-    public void removePruefung(Pruefung pruefung) {
-        this.pruefungen.remove(pruefung);
-        pruefung.setPruefungstyp(null);
     }
 
     public Integer getTypId() {
@@ -64,9 +54,7 @@ public class Pruefungstyp {
 
     @Override
     public String toString() {
-        return String.format("Pruefungstyp ID: %s, Bezeichnung: %-30s",
-                typId != null ? typId.toString() : "n/a",
-                bezeichnung != null ? bezeichnung : "n/a");
+        return String.format("Pruefungstyp ID: %s, Bezeichnung: %-30s", typId.toString(), bezeichnung);
     }
 
     @Override

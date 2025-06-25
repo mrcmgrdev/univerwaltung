@@ -28,6 +28,10 @@ public class Absolviert {
     public Absolviert() {
     }
 
+    public Absolviert(int studentId, int pruefungsId, int versuch) {
+        this.id = new AbsolviertPK().studentId(studentId).pruefungsId(pruefungsId).versuch(versuch);
+    }
+
     public AbsolviertPK getId() {
         return id;
     }
@@ -73,11 +77,7 @@ public class Absolviert {
 
     @Override
     public String toString() {
-        return String.format("Absolviert ID: %s, Student: %s, Pruefung: %s, Note: %s",
-                id != null ? id.toString() : "n/a",
-                student != null ? student.getVorname() + " " + student.getNachname() : "n/a",
-                pruefung != null ? pruefung.getBezeichnung() : "n/a",
-                note != null ? note.getBezeichnung() : "n/a");
+        return String.format("Absolviert ID: %s, Student: %s, Pruefung: %s, Note: %s", id.toString(), student.getVorname() + " " + student.getNachname(), pruefung.getBezeichnung(), note != null ? note.getBezeichnung() : "n/a");
     }
 
     @Override

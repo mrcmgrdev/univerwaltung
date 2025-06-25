@@ -11,7 +11,7 @@ public class Pruefung {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "PruefungsID")
+    @Column(name = "PruefungsID", updatable = false, nullable = false)
     private Integer pruefungsId;
 
     @Column(name = "Bezeichnung", nullable = false, length = 100)
@@ -104,11 +104,7 @@ public class Pruefung {
 
     @Override
     public String toString() {
-        return String.format("Pruefung ID: %s, Bezeichnung: %-30s, Datum: %s, Typ: %s",
-                pruefungsId != null ? pruefungsId.toString() : "n/a",
-                bezeichnung != null ? bezeichnung : "n/a",
-                datum != null ? datum.toString() : "n/a",
-                pruefungstyp != null ? pruefungstyp.getBezeichnung() : "n/a");
+        return String.format("Pruefung ID: %s, Bezeichnung: %-30s, Datum: %s, Typ: %s", pruefungsId.toString(), bezeichnung, datum != null ? datum.toString() : "n/a", pruefungstyp != null ? pruefungstyp.getBezeichnung() : "n/a");
     }
 
     @Override

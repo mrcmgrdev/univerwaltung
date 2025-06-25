@@ -28,6 +28,10 @@ public class Besucht {
     public Besucht() {
     }
 
+    public Besucht(int studentId, int kursId) {
+        this.id = new BesuchtPK().studentId(studentId).kursId(kursId);
+    }
+
     public BesuchtPK getId() {
         return id;
     }
@@ -73,11 +77,7 @@ public class Besucht {
 
     @Override
     public String toString() {
-        return String.format("Besucht ID: %s, Student: %s, Kurs: %s, Note: %s",
-                id != null ? id.toString() : "n/a",
-                student != null ? student.getVorname() + " " + student.getNachname() : "n/a",
-                kurs != null ? kurs.getBezeichnung() : "n/a",
-                note != null ? note.getBezeichnung() : "n/a");
+        return String.format("Besucht ID: %s, Student: %s, Kurs: %s, Note: %s", id.toString(), student.getVorname() + " " + student.getNachname(), kurs.getBezeichnung(), note != null ? note.getBezeichnung() : "n/a");
     }
 
     @Override

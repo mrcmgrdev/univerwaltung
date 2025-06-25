@@ -11,7 +11,7 @@ public class Student {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "StudentID")
+    @Column(name = "StudentID", updatable = false, nullable = false)
     private Integer studentId;
 
     @Column(name = "Vorname", nullable = false, length = 50)
@@ -30,9 +30,7 @@ public class Student {
     private LocalDate geburtsdatum;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "Waehlt",
-            joinColumns = @JoinColumn(name = "StudentID"),
-            inverseJoinColumns = @JoinColumn(name = "StudienprogrammID"))
+    @JoinTable(name = "Waehlt", joinColumns = @JoinColumn(name = "StudentID"), inverseJoinColumns = @JoinColumn(name = "StudienprogrammID"))
     private Set<Studienprogramm> gewaehlteStudienprogramme = new HashSet<>();
 
     @OneToMany(mappedBy = "student", fetch = FetchType.EAGER)
@@ -164,12 +162,7 @@ public class Student {
 
     @Override
     public String toString() {
-        return String.format("Student ID: %s, Name: %-20s, Matrikelnr: %-10s, Email: %-30s, Geburtsdatum: %s",
-                studentId != null ? studentId.toString() : "n/a",
-                vorname + " " + nachname,
-                matrikelnummer != null ? matrikelnummer : "n/a",
-                email != null ? email : "n/a",
-                geburtsdatum != null ? geburtsdatum.toString() : "n/a");
+        return String.format("Student ID: %s, Name: %-20s, Matrikelnr: %-10s, Email: %-30s, Geburtsdatum: %s", studentId.toString(), vorname + " " + nachname, matrikelnummer, email != null ? email : "n/a", geburtsdatum != null ? geburtsdatum.toString() : "n/a");
     }
 
     @Override

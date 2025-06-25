@@ -11,12 +11,12 @@ public class GehoertZuPruefung {
     @EmbeddedId
     private GehoertZuPruefungPK id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @MapsId("kursId")
     @JoinColumn(name = "KursID")
     private Kurs kurs;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @MapsId("pruefungsId")
     @JoinColumn(name = "PruefungsID")
     private Pruefung pruefung;
@@ -25,6 +25,10 @@ public class GehoertZuPruefung {
     private Integer anteilGesamtnoteInProzent;
 
     public GehoertZuPruefung() {
+    }
+
+    public GehoertZuPruefung(int kursId, int pruefungsId) {
+        this.id = new GehoertZuPruefungPK().kursId(kursId).pruefungsId(pruefungsId);
     }
 
     public GehoertZuPruefungPK getId() {
@@ -72,11 +76,7 @@ public class GehoertZuPruefung {
 
     @Override
     public String toString() {
-        return String.format("GehoertZuPruefung ID: %s, Kurs: %s, Pruefung: %s, Anteil: %s%%",
-                id != null ? id.toString() : "n/a",
-                kurs != null ? kurs.getBezeichnung() : "n/a",
-                pruefung != null ? pruefung.getBezeichnung() : "n/a",
-                anteilGesamtnoteInProzent != null ? anteilGesamtnoteInProzent.toString() : "n/a");
+        return String.format("GehoertZuPruefung ID: %s, Kurs: %s, Pruefung: %s, Anteil: %s%%", id.toString(), kurs.getBezeichnung(), pruefung.getBezeichnung(), anteilGesamtnoteInProzent != null ? anteilGesamtnoteInProzent.toString() : "n/a");
     }
 
     @Override

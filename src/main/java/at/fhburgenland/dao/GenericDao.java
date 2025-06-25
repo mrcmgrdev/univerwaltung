@@ -1,14 +1,11 @@
 package at.fhburgenland.dao;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Root;
-import org.hibernate.Session;
+import jakarta.persistence.*;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+
 
 public abstract class GenericDao<T, ID> implements Crud<T, ID> {
     protected final EntityManagerFactory emf;
@@ -22,13 +19,24 @@ public abstract class GenericDao<T, ID> implements Crud<T, ID> {
     @Override
     public List<T> findAll() {
         List<T> result = Collections.emptyList();
-        try (EntityManager em = emf.createEntityManager()) {
+        EntityManager em = null;
+        EntityTransaction tx = null;
+        try {
+            em = emf.createEntityManager();
+            tx = em.getTransaction();
+            tx.begin();
             String query = String.format("SELECT e FROM %s e", entityClass.getSimpleName());
-            em.getTransaction().begin();
             result = em.createQuery(query, entityClass).getResultList();
-            em.getTransaction().commit();
+            tx.commit();
         } catch (Exception ex) {
+            if (tx != null && tx.isActive()) {
+                tx.rollback();
+            }
             ex.printStackTrace();
+        } finally {
+            if (em != null) {
+                em.close();
+            }
         }
         return result;
     }
@@ -45,64 +53,105 @@ public abstract class GenericDao<T, ID> implements Crud<T, ID> {
 
     @Override
     public T save(T entity) {
-        try (EntityManager em = emf.createEntityManager()) {
-            em.getTransaction().begin();
-            em.persist(entity);
-            em.getTransaction().commit();
-            return entity;
+        EntityManager em = null;
+        EntityTransaction tx = null;
+        T managedEntity;
+        try {
+            em = emf.createEntityManager();
+            tx = em.getTransaction();
+            tx.begin();
+            managedEntity = em.merge(entity);
+            tx.commit();
         } catch (Exception ex) {
+            if (tx != null && tx.isActive()) {
+                tx.rollback();
+            }
             ex.printStackTrace();
             return null;
+        } finally {
+            if (em != null) {
+                em.close();
+            }
         }
+        return managedEntity;
     }
 
     @Override
     public T update(T entity) {
-        try (EntityManager em = emf.createEntityManager()) {
-            em.getTransaction().begin();
-            T updated = em.merge(entity);
-            em.getTransaction().commit();
-            return updated;
+        EntityManager em = null;
+        EntityTransaction tx = null;
+        T updatedEntity;
+        try {
+            em = emf.createEntityManager();
+            tx = em.getTransaction();
+            tx.begin();
+            updatedEntity = em.merge(entity);
+            tx.commit();
         } catch (Exception ex) {
+            if (tx != null && tx.isActive()) {
+                tx.rollback();
+            }
             ex.printStackTrace();
             return null;
+        } finally {
+            if (em != null) {
+                em.close();
+            }
         }
-    }
-
-    @Override
-    public void delete(T entity) {
-        try (EntityManager em = emf.createEntityManager()) {
-            em.getTransaction().begin();
-            em.remove(em.contains(entity) ? entity : em.merge(entity));
-            em.getTransaction().commit();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
+        return updatedEntity;
     }
 
     @Override
     public boolean deleteById(ID id) {
-        try (EntityManager em = emf.createEntityManager()) {
-            em.getTransaction().begin();
+        EntityManager em = null;
+        EntityTransaction tx = null;
+        boolean deleted = false;
+        try {
+            em = emf.createEntityManager();
+            tx = em.getTransaction();
+            tx.begin();
             T entity = em.find(entityClass, id);
             if (entity != null) {
                 em.remove(entity);
+                deleted = true;
             }
-            em.getTransaction().commit();
-            return entity != null;
+            tx.commit();
         } catch (Exception ex) {
+            if (tx != null && tx.isActive()) {
+                tx.rollback();
+            }
             ex.printStackTrace();
+        } finally {
+            if (em != null) {
+                em.close();
+            }
         }
-        return false;
+        return deleted;
     }
 
-    @Override
-    public List<?> query(String query) {
-        List<?> result = Collections.emptyList();
-        try (EntityManager em = emf.createEntityManager()) {
-            result = em.createQuery(query).getResultList();
+    public List<Tuple> query(String nativeSqlString, Map<String, Object> parameters) {
+        List<Tuple> result = Collections.emptyList();
+        EntityManager em = null;
+        try {
+            em = emf.createEntityManager();
+            em.getTransaction().begin();
+            Query query = em.createNativeQuery(nativeSqlString, Tuple.class);
+            if (parameters != null) {
+                for (Map.Entry<String, Object> entry : parameters.entrySet()) {
+                    query.setParameter(entry.getKey(), entry.getValue());
+                }
+            }
+            result = query.getResultList();
+            em.getTransaction().commit();
         } catch (Exception ex) {
+            if (em != null && em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
             ex.printStackTrace();
+        } finally {
+            if (em != null) {
+                em.close();
+            }
         }
         return result;
     }

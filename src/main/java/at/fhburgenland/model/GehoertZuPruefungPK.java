@@ -46,9 +46,7 @@ public class GehoertZuPruefungPK implements Serializable, Comparable<GehoertZuPr
 
     @Override
     public String toString() {
-        return String.format("GehoertZuPruefungPK KursID: %s, PruefungsID: %s",
-                kursId != null ? kursId.toString() : "n/a",
-                pruefungsId != null ? pruefungsId.toString() : "n/a");
+        return String.format("GehoertZuPruefungPK KursID: %s, PruefungsID: %s", kursId.toString(), pruefungsId.toString());
     }
 
     @Override
@@ -64,9 +62,6 @@ public class GehoertZuPruefungPK implements Serializable, Comparable<GehoertZuPr
 
     @Override
     public int compareTo(GehoertZuPruefungPK o) {
-        return Comparator
-                .comparing(GehoertZuPruefungPK::getKursId)
-                .thenComparing(GehoertZuPruefungPK::getPruefungsId)
-                .compare(this, o);
+        return Comparator.comparing(GehoertZuPruefungPK::getKursId).thenComparing(GehoertZuPruefungPK::getPruefungsId).compare(this, o);
     }
 }

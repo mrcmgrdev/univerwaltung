@@ -9,7 +9,7 @@ import java.util.*;
 public class Note {
 
     @Id
-    @Column(name = "NoteID")
+    @Column(name = "NoteID", nullable = false, updatable = false)
     private Integer noteId;
 
     @Column(name = "Bezeichnung", nullable = false, length = 50)
@@ -24,7 +24,7 @@ public class Note {
     public Note() {
     }
 
-    public void ListNoteId(Integer noteId) {
+    public void setNoteId(Integer noteId) {
         this.noteId = noteId;
     }
 
@@ -78,9 +78,7 @@ public class Note {
 
     @Override
     public String toString() {
-        return String.format("Note ID: %s, Bezeichnung: %-20s",
-                noteId != null ? noteId.toString() : "n/a",
-                bezeichnung != null ? bezeichnung : "n/a");
+        return String.format("Note ID: %s, Bezeichnung: %-20s", noteId.toString(), bezeichnung);
     }
 
     @Override

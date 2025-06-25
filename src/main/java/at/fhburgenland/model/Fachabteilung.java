@@ -3,7 +3,6 @@ package at.fhburgenland.model;
 import jakarta.persistence.*;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "Fachabteilung")
@@ -11,7 +10,7 @@ public class Fachabteilung {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "AbteilungsID")
+    @Column(name = "AbteilungsID", updatable = false, nullable = false)
     private Integer abteilungsId;
 
     @Column(name = "Name", nullable = false, length = 100)
@@ -24,16 +23,6 @@ public class Fachabteilung {
     private List<Professor> professoren = new ArrayList<>();
 
     public Fachabteilung() {
-    }
-
-    public void addProfessor(Professor professor) {
-        professoren.add(professor);
-        professor.setFachabteilung(this);
-    }
-
-    public void removeProfessor(Professor professor) {
-        professoren.remove(professor);
-        professor.setFachabteilung(null);
     }
 
     public Integer getAbteilungsId() {
@@ -81,10 +70,7 @@ public class Fachabteilung {
 
     @Override
     public String toString() {
-        return String.format("Fachabteilung ID: %s, Name: %s, Standort: %s",
-                abteilungsId != null ? abteilungsId.toString() : "n/a",
-                name != null ? name : "n/a",
-                standort != null ? standort : "n/a");
+        return String.format("Fachabteilung ID: %s, Name: %s, Standort: %s", abteilungsId.toString(), name, standort);
     }
 
     @Override

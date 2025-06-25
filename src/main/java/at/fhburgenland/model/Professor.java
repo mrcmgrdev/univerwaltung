@@ -10,7 +10,7 @@ public class Professor {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ProfessorID")
+    @Column(name = "ProfessorID", updatable = false, nullable = false)
     private Integer professorId;
 
     @Column(name = "Vorname", nullable = false, length = 50)
@@ -19,7 +19,7 @@ public class Professor {
     @Column(name = "Nachname", nullable = false, length = 50)
     private String nachname;
 
-    @Column(name = "Email", unique = true, length = 255)
+    @Column(name = "Email", unique = true)
     private String email;
 
     @ManyToOne(fetch = FetchType.EAGER)
@@ -30,9 +30,7 @@ public class Professor {
     private Studienprogramm geleiteteStudienprogramm;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "Unterrichtet",
-            joinColumns = @JoinColumn(name = "ProfessorID"),
-            inverseJoinColumns = @JoinColumn(name = "KursID"))
+    @JoinTable(name = "Unterrichtet", joinColumns = @JoinColumn(name = "ProfessorID"), inverseJoinColumns = @JoinColumn(name = "KursID"))
     private List<Kurs> unterrichteteKurse = new ArrayList<>();
 
     public Professor() {
@@ -122,11 +120,7 @@ public class Professor {
 
     @Override
     public String toString() {
-        return String.format("Professor ID: %s, Name: %-20s, Email: %-30s, Fachabteilung: %s",
-                professorId != null ? professorId.toString() : "n/a",
-                vorname + " " + nachname,
-                email != null ? email : "n/a",
-                fachabteilung != null ? fachabteilung.getName() : "n/a");
+        return String.format("Professor ID: %s, Name: %-20s, Email: %-30s, Fachabteilung: %s", professorId.toString(), vorname + " " + nachname, email != null ? email : "n/a", fachabteilung != null ? fachabteilung.getName() : "n/a");
     }
 
     @Override

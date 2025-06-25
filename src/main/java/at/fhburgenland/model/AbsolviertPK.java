@@ -62,10 +62,7 @@ public class AbsolviertPK implements Serializable, Comparable<AbsolviertPK> {
 
     @Override
     public String toString() {
-        return String.format("AbsolviertPK StudentID: %s, PruefungsID: %s, Versuch: %s",
-                studentId != null ? studentId.toString() : "n/a",
-                pruefungsId != null ? pruefungsId.toString() : "n/a",
-                versuch != null ? versuch.toString() : "n/a");
+        return String.format("AbsolviertPK StudentID: %s, PruefungsID: %s, Versuch: %s", studentId.toString(), pruefungsId.toString(), versuch.toString());
     }
 
     @Override

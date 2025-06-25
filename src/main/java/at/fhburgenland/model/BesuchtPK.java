@@ -46,9 +46,7 @@ public class BesuchtPK implements Serializable, Comparable<BesuchtPK> {
 
     @Override
     public String toString() {
-        return String.format("BesuchtPK StudentID: %s, KursID: %s",
-                studentId != null ? studentId.toString() : "n/a",
-                kursId != null ? kursId.toString() : "n/a");
+        return String.format("BesuchtPK StudentID: %s, KursID: %s", studentId.toString(), kursId.toString());
     }
 
     @Override
@@ -66,6 +64,5 @@ public class BesuchtPK implements Serializable, Comparable<BesuchtPK> {
     @Override
     public int compareTo(BesuchtPK o) {
         return Comparator.comparing(BesuchtPK::getStudentId).thenComparing(BesuchtPK::getKursId).compare(this, o);
-
     }
 }

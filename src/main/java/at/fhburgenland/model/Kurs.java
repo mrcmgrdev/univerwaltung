@@ -10,7 +10,7 @@ public class Kurs {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "KursID")
+    @Column(name = "KursID", nullable = false, updatable = false)
     private Integer kursId;
 
     @Column(name = "Bezeichnung", nullable = false, length = 100)
@@ -145,12 +145,7 @@ public class Kurs {
 
     @Override
     public String toString() {
-        return String.format("Kurs ID: %s, Bezeichnung: %-30s, Semester: %s, ECTS: %s, Studienprogramm: %s",
-                kursId != null ? kursId.toString() : "n/a",
-                bezeichnung != null ? bezeichnung : "n/a",
-                semester != null ? semester.toString() : "n/a",
-                ects != null ? ects.toString() : "n/a",
-                studienprogramm != null ? studienprogramm.getName() : "n/a");
+        return String.format("Kurs ID: %s, Bezeichnung: %-30s, Semester: %s, ECTS: %s, Studienprogramm: %s", kursId.toString(), bezeichnung, semester != null ? semester.toString() : "n/a", ects != null ? ects.toString() : "n/a", studienprogramm.getName());
     }
 
     @Override
