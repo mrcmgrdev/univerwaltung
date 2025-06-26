@@ -10,7 +10,8 @@ import java.util.*;
 public class Student {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "student_seq_generator")
+    @SequenceGenerator(name = "student_seq_generator", sequenceName = "student_studentid_seq", allocationSize = 1)
     @Column(name = "StudentID", updatable = false, nullable = false)
     private Integer studentId;
 
@@ -20,7 +21,7 @@ public class Student {
     @Column(name = "Nachname", nullable = false, length = 50)
     private String nachname;
 
-    @Column(name = "Matrikelnummer", unique = true, nullable = false, length = 20)
+    @Column(name = "Matrikelnummer", updatable = false, unique = true, nullable = false, length = 20)
     private String matrikelnummer;
 
     @Column(name = "Email", unique = true)

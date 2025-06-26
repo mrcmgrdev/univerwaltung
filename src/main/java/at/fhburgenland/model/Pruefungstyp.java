@@ -9,7 +9,8 @@ import java.util.*;
 public class Pruefungstyp {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "pruefungstyp_seq_generator")
+    @SequenceGenerator(name = "pruefungstyp_seq_generator", sequenceName = "pruefungstyp_typid_seq", allocationSize = 1)
     @Column(name = "TypID", nullable = false, updatable = false)
     private Integer typId;
 

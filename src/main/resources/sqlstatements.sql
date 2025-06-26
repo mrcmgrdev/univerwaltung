@@ -31,8 +31,8 @@ CREATE TABLE Studienprogramm
 (
     StudienprogrammID            SERIAL PRIMARY KEY,
     Name                         VARCHAR(100) NOT NULL,
-    Abschluss                    VARCHAR(10),
-    Regelstudienzeit_in_Semester INT,
+    Abschluss                    VARCHAR(10)  NOT NULL,
+    Regelstudienzeit_in_Semester INT          NOT NULL,
     ProfessorID                  INT          NOT NULL,
     FOREIGN KEY (ProfessorID) REFERENCES Professor (ProfessorID)
 );
@@ -41,8 +41,8 @@ CREATE TABLE Kurs
 (
     KursID            SERIAL PRIMARY KEY,
     Bezeichnung       VARCHAR(100) NOT NULL,
-    Semester          INT,
-    ECTS              INT,
+    Semester          INT          NOT NULL,
+    ECTS              INT          NOT NULL,
     StudienprogrammID INT          NOT NULL,
     FOREIGN KEY (StudienprogrammID) REFERENCES Studienprogramm (StudienprogrammID)
 );
@@ -110,8 +110,8 @@ CREATE TABLE Absolviert
 (
     StudentID   INT,
     PruefungsID INT,
+    Versuch     INT,
     NoteID      INT,
-    Versuch     INT NOT NULL,
     PRIMARY KEY (StudentID, PruefungsID, Versuch),
     FOREIGN KEY (StudentID) REFERENCES Student (StudentID),
     FOREIGN KEY (PruefungsID) REFERENCES Pruefung (PruefungsID),

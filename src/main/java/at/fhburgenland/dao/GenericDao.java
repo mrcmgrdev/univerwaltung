@@ -120,6 +120,7 @@ public abstract class GenericDao<T, ID> implements Crud<T, ID> {
             if (tx != null && tx.isActive()) {
                 tx.rollback();
             }
+            deleted = false;
             ex.printStackTrace();
         } finally {
             if (em != null) {

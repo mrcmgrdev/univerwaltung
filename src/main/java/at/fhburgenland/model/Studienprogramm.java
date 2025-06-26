@@ -9,7 +9,8 @@ import java.util.*;
 public class Studienprogramm {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "studienprogramm_seq_generator")
+    @SequenceGenerator(name = "studienprogramm_seq_generator", sequenceName = "studienprogramm_studienprogrammid_seq", allocationSize = 1)
     @Column(name = "StudienprogrammID", nullable = false, updatable = false)
     private Integer studienprogrammId;
 

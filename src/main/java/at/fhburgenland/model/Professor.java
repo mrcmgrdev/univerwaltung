@@ -9,7 +9,8 @@ import java.util.*;
 public class Professor {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "professor_seq_generator")
+    @SequenceGenerator(name = "professor_seq_generator", sequenceName = "professor_professorid_seq", allocationSize = 1)
     @Column(name = "ProfessorID", updatable = false, nullable = false)
     private Integer professorId;
 
@@ -29,8 +30,7 @@ public class Professor {
     @OneToOne(mappedBy = "programmleiter", fetch = FetchType.EAGER)
     private Studienprogramm geleiteteStudienprogramm;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "Unterrichtet", joinColumns = @JoinColumn(name = "ProfessorID"), inverseJoinColumns = @JoinColumn(name = "KursID"))
+    @ManyToMany(mappedBy = "professoren", fetch = FetchType.EAGER)
     private List<Kurs> unterrichteteKurse = new ArrayList<>();
 
     public Professor() {
@@ -120,7 +120,7 @@ public class Professor {
 
     @Override
     public String toString() {
-        return String.format("Professor ID: %s, Name: %-20s, Email: %-30s, Fachabteilung: %s", professorId.toString(), vorname + " " + nachname, email != null ? email : "n/a", fachabteilung != null ? fachabteilung.getName() : "n/a");
+        return String.format("Professor ID: %s, Name: %-20s, Email: %-30s, Fachabteilung: %s, Programmleiter: %s", professorId.toString(), vorname + " " + nachname, email != null ? email : "n/a", fachabteilung != null ? fachabteilung.getName() : "n/a", geleiteteStudienprogramm != null ? geleiteteStudienprogramm.getName() : "n/a");
     }
 
     @Override

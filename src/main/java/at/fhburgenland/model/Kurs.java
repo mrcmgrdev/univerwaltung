@@ -9,24 +9,26 @@ import java.util.*;
 public class Kurs {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "kurs_seq_generator")
+    @SequenceGenerator(name = "kurs_seq_generator", sequenceName = "kurs_kursid_seq", allocationSize = 1)
     @Column(name = "KursID", nullable = false, updatable = false)
     private Integer kursId;
 
     @Column(name = "Bezeichnung", nullable = false, length = 100)
     private String bezeichnung;
 
-    @Column(name = "Semester")
+    @Column(name = "Semester", nullable = false)
     private Integer semester;
 
-    @Column(name = "ECTS")
+    @Column(name = "ECTS", nullable = false)
     private Integer ects;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "StudienprogrammID", nullable = false)
     private Studienprogramm studienprogramm;
 
-    @ManyToMany(mappedBy = "unterrichteteKurse", fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "Unterrichtet", joinColumns = @JoinColumn(name = "KursID"), inverseJoinColumns = @JoinColumn(name = "ProfessorID"))
     private List<Professor> professoren = new ArrayList<>();
 
     @OneToMany(mappedBy = "kurs", fetch = FetchType.EAGER)
@@ -39,13 +41,13 @@ public class Kurs {
     }
 
     public void addProfessor(Professor professor) {
-        this.professoren.add(professor);
         professor.getUnterrichteteKurse().add(this);
+        this.professoren.add(professor);
     }
 
     public void removeProfessor(Professor professor) {
-        this.professoren.remove(professor);
         professor.getUnterrichteteKurse().remove(this);
+        this.professoren.remove(professor);
     }
 
     public Integer getKursId() {

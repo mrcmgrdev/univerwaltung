@@ -9,7 +9,8 @@ import java.util.*;
 public class Fachabteilung {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "fachabteilung_seq_generator")
+    @SequenceGenerator(name = "fachabteilung_seq_generator", sequenceName = "fachabteilung_abteilungsid_seq", allocationSize = 1)
     @Column(name = "AbteilungsID", updatable = false, nullable = false)
     private Integer abteilungsId;
 
