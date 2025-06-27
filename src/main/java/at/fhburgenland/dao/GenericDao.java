@@ -32,7 +32,6 @@ public abstract class GenericDao<T, ID> implements Crud<T, ID> {
             if (tx != null && tx.isActive()) {
                 tx.rollback();
             }
-            ex.printStackTrace();
         } finally {
             if (em != null) {
                 em.close();
@@ -46,7 +45,6 @@ public abstract class GenericDao<T, ID> implements Crud<T, ID> {
         try (EntityManager em = emf.createEntityManager()) {
             return em.find(entityClass, id);
         } catch (Exception ex) {
-            ex.printStackTrace();
             return null;
         }
     }
@@ -66,7 +64,6 @@ public abstract class GenericDao<T, ID> implements Crud<T, ID> {
             if (tx != null && tx.isActive()) {
                 tx.rollback();
             }
-            ex.printStackTrace();
             return null;
         } finally {
             if (em != null) {
@@ -91,7 +88,6 @@ public abstract class GenericDao<T, ID> implements Crud<T, ID> {
             if (tx != null && tx.isActive()) {
                 tx.rollback();
             }
-            ex.printStackTrace();
             return null;
         } finally {
             if (em != null) {
@@ -121,7 +117,6 @@ public abstract class GenericDao<T, ID> implements Crud<T, ID> {
                 tx.rollback();
             }
             deleted = false;
-            ex.printStackTrace();
         } finally {
             if (em != null) {
                 em.close();
@@ -148,7 +143,6 @@ public abstract class GenericDao<T, ID> implements Crud<T, ID> {
             if (em != null && em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
-            ex.printStackTrace();
         } finally {
             if (em != null) {
                 em.close();

@@ -21,14 +21,14 @@
         <class>at.fhburgenland.model.Studienprogramm</class>
         <properties>
             <!-- Driver for DB database -->
-            <property name="jakarta.persistence.jdbc.driver" value="org.postgresql.Driver" />
+            <property name="jakarta.persistence.jdbc.driver" value="org.postgresql.Driver"/>
             <!-- URL for DB -->
-            <property name="jakarta.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/Gruppe7" />
+            <property name="jakarta.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/Gruppe7"/>
             <!-- Username -->
             <!-- Achtung Property heißt NICHT username -->
-            <property name="jakarta.persistence.jdbc.user" value="postgres" />
+            <property name="jakarta.persistence.jdbc.user" value="postgres"/>
             <!-- Password -->
-            <property name="jakarta.persistence.jdbc.password" value="postgres" />
+            <property name="jakarta.persistence.jdbc.password" value="postgres"/>
         </properties>
     </persistence-unit>
 </persistence>
